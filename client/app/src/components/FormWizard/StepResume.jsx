@@ -4,7 +4,7 @@ export default function StepResume({ data, updateFormData, nextStep }) {
   };
 
   return (
-    <div>
+    <div className="p-6">
       <h2 className="text-xl font-semibold mb-4">Upload or Select Resume</h2>
       <input
         type="file"

@@ -1,7 +1,9 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function Login() {
   const [form, setForm] = useState({ username: "", password: "" });
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -39,8 +41,9 @@ export default function Login() {
               required
             />
             <button
+              onClick={() => navigate('/userdashboard')}
               type="submit"
-              className="w-full bg-white text-black py-2 rounded-md hover:bg-blue-700"
+              className="w-full bg-white text-black py-2 rounded-md hover:bg-black hover:text-white transition duration-200"
             >
               Log In
             </button>

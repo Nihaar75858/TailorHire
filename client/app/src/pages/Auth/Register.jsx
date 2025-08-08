@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function Register() {
   const [form, setForm] = useState({
@@ -9,13 +10,28 @@ export default function Register() {
     password: "",
   });
 
+  const navigate = useNavigate();
+
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // send form to backend
+    try {
+      const response = await fetch('http://127.0.0.1:8000/api/register/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(form),
+      });
+
+      const data = await response.json();
+      setresumes((prev) => [...prev, data]);
+    } catch (error) {
+      console.error('Error adding resume:', error);
+    }
     console.log("Register:", form);
   };
 
@@ -72,8 +88,9 @@ export default function Register() {
               required
             />
             <button
+              onClick={() => navigate('/')}
               type="submit"
-              className="w-full bg-green-600 text-white py-2 rounded-md hover:bg-green-700"
+              className="w-full bg-white text-black py-2 rounded-md hover:bg-black hover:text-white transition duration-200"
             >
               Register
             </button>

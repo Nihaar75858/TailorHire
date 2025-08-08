@@ -6,9 +6,12 @@ import RegisterForm from './pages/Auth/Register';
 import Navbar from './components/Navbar/Navbar';
 import ResumeView from './pages/ResumeMaker/ResumeMaker';
 import FormWizard from './components/FormWizard/FormWizard';
+import UserDashboard from "./pages/UserDashBoard/UserDashBoard";
+// import { useAuth } from "./components/hooks/useAuth";
 
 function App() {
   const location = useLocation();
+  // const { user } = useAuth();
 
   const paths = ['/login', '/register'];
   const showNavbar = !paths.includes(location.pathname);
@@ -23,6 +26,10 @@ function App() {
         <Route path='/register' element={<RegisterForm />} />
         <Route path="/addresume" element={<ResumeView />} />
         <Route path="/formwizard" element={<FormWizard />} />
+        {/* <Route
+          path="/dashboard"
+          element={user ? <UserDashboard /> : <Navigate to="/login" />}
+        /> */}
       </Routes>
     </>
   )

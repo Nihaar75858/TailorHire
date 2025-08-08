@@ -1,6 +1,6 @@
 export default function StepJob({ data, updateFormData, nextStep, prevStep }) {
   return (
-    <div>
+    <div className="p-6">
       <h2 className="text-xl font-semibold mb-4">Job Details</h2>
       <input
         type="text"

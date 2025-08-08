@@ -1,7 +1,12 @@
+import { useNavigate } from "react-router-dom";
+
 export default function StepReview({ data, prevStep }) {
+  const navigate = useNavigate();
+
   const handleSubmit = () => {
     console.log("Final Data:", data);
     alert("Form submitted!");
+    navigate("/"); // Redirect to home or another page after submission
   };
 
   return (
