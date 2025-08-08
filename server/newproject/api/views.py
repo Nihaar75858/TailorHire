@@ -39,8 +39,8 @@ def resume_detail(request, pk):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 @api_view(['GET'])
-def user_details(request):
-    user = User.objects.all()
+def user_details(request, pk):
+    user = User.objects.get(pk = pk)
     serializedData = UserSerializer(user, many=True).data
     return Response(serializedData)
 
@@ -55,14 +55,12 @@ def create_user(request):
 
 @api_view(['POST'])
 def register(request):
-    try :
-        data = request.data
-        serializer = RegisterSerializer(data=data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-    except :
-        return Response(status = status.HTTP_400_BAD_REQUEST)
+    data = request.data
+    serializer = RegisterSerializer(data=data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(status = status.HTTP_400_BAD_REQUEST)
     
 @api_view(['POST'])
 def login(request):
