@@ -1,21 +1,22 @@
-// import './App.css';
-import { Routes, Route, useLocation } from 'react-router-dom';
-import DashBoard from './pages/DashBoard/DashBoard';
-import LoginForm from './pages/Auth/Login';
-import RegisterForm from './pages/Auth/Register';
-import Navbar from './components/Navbar/Navbar';
-import ResumeView from './pages/ResumeMaker/ResumeMaker';
-import FormWizard from './components/FormWizard/FormWizard';
+// App.jsx
+import { Routes, Route, useLocation } from "react-router-dom";
+import DashBoard from "./pages/DashBoard/DashBoard";
+import LoginForm from "./pages/Auth/Login";
+import RegisterForm from "./pages/Auth/Register";
+import Navbar from "./components/Navbar/Navbar";
+import ResumeView from "./pages/ResumeMaker/ResumeMaker";
+import FormWizard from "./components/FormWizard/FormWizard";
 import UserDashboard from "./pages/UserDashBoard/UserDashBoard";
+import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
 import { useAuth } from "./components/hooks/useAuth";
 
 function App() {
   const location = useLocation();
-  const { user } = useAuth();
+  // const { user } = useAuth(); // assuming useAuth provides user state
 
-  const paths = ['/login', '/register'];
-  const showNavbar = !paths.includes(location.pathname);
-
+  // Hide navbar on login/register pages
+  const noNavbarPaths = ["/login", "/register"];
+  const showNavbar = !noNavbarPaths.includes(location.pathname);
 
   return (
     <>
@@ -23,16 +24,18 @@ function App() {
       <Routes>
         <Route path="/" element={<DashBoard />} />
         <Route path="/login" element={<LoginForm />} />
-        <Route path='/register' element={<RegisterForm />} />
+        <Route path="/register" element={<RegisterForm />} />
         <Route path="/addresume" element={<ResumeView />} />
         <Route path="/formwizard" element={<FormWizard />} />
         <Route
-          path="/dashboard"
-          element={user ? <UserDashboard /> : <Navigate to="/login" />}
+          path="/userdashboard"
+          element={
+            <UserDashboard />
+          }
         />
       </Routes>
     </>
-  )
+  );
 }
 
-export default App
+export default App;

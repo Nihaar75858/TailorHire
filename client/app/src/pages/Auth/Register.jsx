@@ -18,6 +18,7 @@ export default function Register() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     try {
       const response = await fetch('http://127.0.0.1:8000/api/register/', {
         method: 'POST',
@@ -27,12 +28,22 @@ export default function Register() {
         body: JSON.stringify(form),
       });
 
+      // Check if response is OK before parsing JSON
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("Error from server:", errorData);
+        return;
+      }
+
       const data = await response.json();
-      setresumes((prev) => [...prev, data]);
+      alert("Registration successful!");
+      console.log("Registration successful:", data);
+
     } catch (error) {
       console.error('Error adding resume:', error);
     }
-    console.log("Register:", form);
+
+    console.log("Register form data sent:", form);
   };
 
   return (

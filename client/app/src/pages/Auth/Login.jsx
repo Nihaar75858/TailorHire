@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 
 export default function Login() {
-  const [form, setForm] = useState({ username: "", password: "" });
+  const [form, setForm] = useState({ email: "", password: "" });
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -12,8 +12,9 @@ export default function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     try {
-      const response = await fetch('http://127.0.0.1:8000/api/register/', {
+      const response = await fetch('http://127.0.0.1:8000/api/login/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -21,13 +22,33 @@ export default function Login() {
         body: JSON.stringify(form),
       });
 
+      // Parse server response
       const data = await response.json();
-      setresumes((prev) => [...prev, data]);
+
+      if (!response.ok) {
+        console.error("Error from server:", data);
+        alert(data.detail || "Login failed!");
+        return;
+      }
+
+      // Save token and/or user data to localStorage so useAuth can access it
+      localStorage.setItem("user", JSON.stringify(data.user)); // store user object
+      localStorage.setItem("token", data.token); // store auth token
+
+      alert("Login successful!");
+      console.log("Login successful:", data);
+
+      // Redirect to dashboard
+      navigate('/userdashboard');
+
     } catch (error) {
-      console.error('Error adding resume:', error);
+      console.error('Error logging in:', error);
+      alert("An error occurred during login.");
     }
+
     console.log("Login:", form);
   };
+
 
   return (
     <div className="min-h-screen flex bg-orange-400 text-white">
@@ -38,9 +59,9 @@ export default function Login() {
           <form onSubmit={handleSubmit} className="space-y-6">
             <input
               type="text"
-              name="username"
-              placeholder="Username"
-              value={form.username}
+              name="email"
+              placeholder="Email"
+              value={form.email}
               onChange={handleChange}
               className="w-full px-4 py-2 border border-gray-300 rounded-md"
               required

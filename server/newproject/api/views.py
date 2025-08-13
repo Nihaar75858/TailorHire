@@ -1,8 +1,10 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-from .models import Resume, User
-from .serializer import ResumeSerializer, LoginSerializer, RegisterSerializer, UserSerializer
+from django.contrib.auth.hashers import check_password, make_password
+from rest_framework_simplejwt.tokens import RefreshToken
+from .models import Resume, User, Register
+from .serializer import ResumeSerializer, RegisterSerializer, UserSerializer
 
 @api_view(['GET'])
 def resume_list(request):
@@ -39,37 +41,60 @@ def resume_detail(request, pk):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 @api_view(['GET'])
-def user_details(request, pk):
-    user = User.objects.get(pk = pk)
-    serializedData = UserSerializer(user, many=True).data
-    return Response(serializedData)
-
-@api_view(['POST'])
-def create_user(request):
-    data = request.data
-    serializer = UserSerializer(data=data)
-    if serializer.is_valid():
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+def user_details(request, user_id):
+    try:
+        user = Register.objects.get(pk = user_id)
+        serializedData = RegisterSerializer(user, many=True).data
+        return Response(serializedData)
+    except:
+        return Response({'error': 'User Not Found'}, status=status.HTTP_400_NOT_FOUND)
 
 @api_view(['POST'])
 def register(request):
-    data = request.data
-    serializer = RegisterSerializer(data=data)
-    if serializer.is_valid():
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-    return Response(status = status.HTTP_400_BAD_REQUEST)
-    
-@api_view(['POST'])
-def login(request):
-    try :
+    try:
         data = request.data
-        serializer = LoginSerializer(data=data)
+        data['password'] = make_password(data['password'])  # hash the password
+        serializer = RegisterSerializer(data=data)
+        
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-    except :
-        return Response(status = status.HTTP_400_BAD_REQUEST)
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
     
+@api_view(['POST'])
+def login(request):
+    try:
+        username = request.data.get("username")
+        password = request.data.get("password")
+        
+        print(f"Login attempt with username: {username} and password: {password}")
+
+        # Get user by email
+        try:
+            user = Register.objects.get(username=username)
+        except Register.DoesNotExist:
+            return Response({"error": "Invalid email or password"}, status=status.HTTP_401_UNAUTHORIZED)
+
+        # If password is stored hashed, use check_password
+        if not check_password(password, user.password):
+            return Response({"error": "Invalid email or password"}, status=status.HTTP_401_UNAUTHORIZED)
+
+        # Serialize and return user info
+        serializer = RegisterSerializer(user)
+        if user:
+            refresh = RefreshToken.for_user(user)
+            return Response({"message": "Login successful", 'user': {
+                'id': user.id,
+                'username': user.username,
+                'email': user.email
+            },
+            'access': str(refresh.access_token),
+            'refresh': str(refresh)}, status=status.HTTP_200_OK)
+        return Response({"error": "Invalid credentials"}, status=400)
+
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

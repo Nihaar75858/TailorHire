@@ -1,18 +1,25 @@
-// src/hooks/useAuth.js
 import { useContext, createContext, useState, useEffect } from "react";
 
-// Create Auth Context
 const AuthContext = createContext(null);
 
-// Auth Provider Component
+export function useAuth() {
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+  }, []);
+}
+
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
 
-  // Simulate fetching user from localStorage or API
   useEffect(() => {
     const fetchUser = async () => {
       const userId = localStorage.getItem("user");
-      if (!userId || userId == 'undefined' || userId == null) {
+      if (!userId || userId === 'undefined' || userId === null) {
         const storedUser = localStorage.getItem("user");
         if (storedUser) {
           setUser(JSON.parse(storedUser));
@@ -30,7 +37,6 @@ export function AuthProvider({ children }) {
         localStorage.setItem("user", JSON.stringify(data));
       } catch {
         console.log("Error fetching user from backend");
-        const storedUser = JSON.parse(localStorage.getItem("user"));
       }
     };
 
@@ -52,9 +58,4 @@ export function AuthProvider({ children }) {
       {children}
     </AuthContext.Provider>
   );
-}
-
-// Custom hook
-export function useAuth() {
-  return useContext(AuthContext);
 }
