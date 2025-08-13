@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 
 export default function Login() {
-  const [form, setForm] = useState({ email: "", password: "" });
+  const [form, setForm] = useState({ username: "", password: "" });
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -24,6 +24,7 @@ export default function Login() {
 
       // Parse server response
       const data = await response.json();
+      console.log("Response from server:", data);
 
       if (!response.ok) {
         console.error("Error from server:", data);
@@ -32,8 +33,12 @@ export default function Login() {
       }
 
       // Save token and/or user data to localStorage so useAuth can access it
-      localStorage.setItem("user", JSON.stringify(data.user)); // store user object
-      localStorage.setItem("token", data.token); // store auth token
+      localStorage.setItem("userId", data.user.id);
+      localStorage.setItem("user", JSON.stringify(data.user));
+
+      // Optionally save tokens if you use them
+      localStorage.setItem("accessToken", data.access);
+      localStorage.setItem("refreshToken", data.refresh);// store auth token
 
       alert("Login successful!");
       console.log("Login successful:", data);
@@ -59,9 +64,9 @@ export default function Login() {
           <form onSubmit={handleSubmit} className="space-y-6">
             <input
               type="text"
-              name="email"
-              placeholder="Email"
-              value={form.email}
+              name="username"
+              placeholder="Username"
+              value={form.username}
               onChange={handleChange}
               className="w-full px-4 py-2 border border-gray-300 rounded-md"
               required

@@ -43,11 +43,11 @@ def resume_detail(request, pk):
 @api_view(['GET'])
 def user_details(request, user_id):
     try:
-        user = Register.objects.get(pk = user_id)
-        serializedData = RegisterSerializer(user, many=True).data
-        return Response(serializedData)
-    except:
-        return Response({'error': 'User Not Found'}, status=status.HTTP_400_NOT_FOUND)
+        user = Register.objects.get(id=user_id)
+        serializedData = RegisterSerializer(user).data
+        return Response(serializedData, status=status.HTTP_200_OK)
+    except Register.DoesNotExist:
+        return Response({'error': 'User Not Found'}, status=status.HTTP_404_NOT_FOUND)
 
 @api_view(['POST'])
 def register(request):
@@ -77,24 +77,21 @@ def login(request):
         try:
             user = Register.objects.get(username=username)
         except Register.DoesNotExist:
-            return Response({"error": "Invalid email or password"}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response({"error": "Invalid username"}, status=status.HTTP_401_UNAUTHORIZED)
 
         # If password is stored hashed, use check_password
         if not check_password(password, user.password):
-            return Response({"error": "Invalid email or password"}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response({"error": "Invalid password"}, status=status.HTTP_401_UNAUTHORIZED)
 
-        # Serialize and return user info
-        serializer = RegisterSerializer(user)
-        if user:
-            refresh = RefreshToken.for_user(user)
-            return Response({"message": "Login successful", 'user': {
-                'id': user.id,
-                'username': user.username,
-                'email': user.email
-            },
-            'access': str(refresh.access_token),
-            'refresh': str(refresh)}, status=status.HTTP_200_OK)
-        return Response({"error": "Invalid credentials"}, status=400)
+        refresh = RefreshToken.for_user(user)
+        return Response({"message": "Login successful", 'user': {
+            'id': user.id,
+            'username': user.username,
+            'email': user.email,
+            'role': user.role
+        },
+        'access': str(refresh.access_token),
+        'refresh': str(refresh)}, status=status.HTTP_200_OK)
 
     except Exception as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

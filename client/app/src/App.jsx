@@ -7,14 +7,9 @@ import Navbar from "./components/Navbar/Navbar";
 import ResumeView from "./pages/ResumeMaker/ResumeMaker";
 import FormWizard from "./components/FormWizard/FormWizard";
 import UserDashboard from "./pages/UserDashBoard/UserDashBoard";
-import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
-import { useAuth } from "./components/hooks/useAuth";
 
 function App() {
   const location = useLocation();
-  // const { user } = useAuth(); // assuming useAuth provides user state
-
-  // Hide navbar on login/register pages
   const noNavbarPaths = ["/login", "/register"];
   const showNavbar = !noNavbarPaths.includes(location.pathname);
 

@@ -5,10 +5,9 @@ import {
   FingerPrintIcon,
   SquaresPlusIcon,
 } from '@heroicons/react/24/outline'
-import { PhoneIcon, PlayCircleIcon } from '@heroicons/react/20/solid'
 
 const NavigationConfig = {
-    0: [ // Guest / not logged in
+    0: [ // Viewer / not logged in
         // Adding products section
         {
             name: "Products",
@@ -20,15 +19,6 @@ const NavigationConfig = {
                 { name: 'Automations', to: '#', icon: ArrowPathIcon, description: 'Build strategic funnels that will convert' },
             ]
         },
-
-        // Adding callsToAction section
-        {
-            name: "Actions",
-            submenus: [
-                { name: 'Watch demo', to: '#', icon: PlayCircleIcon },
-                { name: 'Contact sales', to: '#', icon: PhoneIcon },
-            ]
-        }
     ],
     1: [ // Admin
         { name: "Home", to: "/admin/admindashboard", submenus: null },

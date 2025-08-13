@@ -2,14 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ResumeSection from "./../../components/User/ResumeSection";
 import JobPostings from "./../../components/User/JobPostings";
+import { useUser } from "../../components/hooks/useAuth";
 // import Recommendations from "./../../components/User/Recommendations";
 
 const UserDashBoard = () => {
     const [resumes, setresumes] = useState([]);
     const [title, setTitle] = useState('');
     const [releaseYear, setReleaseYear] = useState(0);
-
+    const { user, userType } = useUser();
     const [newTitle, setNewTitle] = useState('');
+    if (!user) return <p>Loading...</p>;
 
     const navigate = useNavigate();
 
@@ -90,45 +92,47 @@ const UserDashBoard = () => {
 
     return (
         <>
-            <div>UserDashBoard</div>
+            <div className='min-h-screen bg-gradient-to-r from-orange-200 via-orange-400 to-orange-600 flex flex-col items-center justify-center text-gray-800'>
+                <div className='text-8xl justify-center text-center text-white pt-15 pb-6'>UserDashBoard</div>
 
-            <div className='flex gap-2 mb-4'>
-                <input title='Name'
-                    type='text'
-                    placeholder='Name your file...'
-                    onChange={(e) => setTitle(e.target.value)}
-                    className='bg-white'
-                ></input>
-                <input
-                    title='Date'
-                    type='number'
-                    placeholder='Release Date...'
-                    onChange={(e) => setReleaseYear(e.target.value)}></input>
-                <button onClick={addresume}> Submit Code </button>
-            </div>
-            {resumes.map((resume) => (
-                <div>
-                    <p>Title: {resume.title}</p>
-                    <p>Released: {resume.release_year}</p>
-                    <input
+                <div className='flex gap-2 mb-4'>
+                    <input title='Name'
                         type='text'
-                        placeholder='Add New Title...'
-                        onChange={(e) => setNewTitle(e.target.value)}
-                    />
-                    <button onClick={() => updateresume(resume.id, resume.release_year)}>
-                        {" "}
-                        Change Name
-                    </button>
-                    <button onClick={() => deleteresume(resume.id)}>
-                        Delete Code
-                    </button>
+                        placeholder='Name your file...'
+                        onChange={(e) => setTitle(e.target.value)}
+                        className='bg-white'
+                    ></input>
+                    <input
+                        title='Date'
+                        type='number'
+                        placeholder='Release Date...'
+                        onChange={(e) => setReleaseYear(e.target.value)}></input>
+                    <button onClick={addresume}> Submit Code </button>
                 </div>
-            ))}
+                {resumes.map((resume) => (
+                    <div>
+                        <p>Title: {resume.title}</p>
+                        <p>Released: {resume.release_year}</p>
+                        <input
+                            type='text'
+                            placeholder='Add New Title...'
+                            onChange={(e) => setNewTitle(e.target.value)}
+                        />
+                        <button onClick={() => updateresume(resume.id, resume.release_year)}>
+                            {" "}
+                            Change Name
+                        </button>
+                        <button onClick={() => deleteresume(resume.id)}>
+                            Delete Code
+                        </button>
+                    </div>
+                ))}
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <ResumeSection />
-                <JobPostings />
-                {/* <Recommendations /> */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <ResumeSection />
+                    <JobPostings />
+                    {/* <Recommendations /> */}
+                </div>
             </div>
         </>
     )
