@@ -1,6 +1,7 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
+from .ai_service import ai_service
 from django.contrib.auth.hashers import check_password, make_password
 from rest_framework_simplejwt.tokens import RefreshToken
 from .models import Resume, User, Register
@@ -70,8 +71,6 @@ def login(request):
     try:
         username = request.data.get("username")
         password = request.data.get("password")
-        
-        print(f"Login attempt with username: {username} and password: {password}")
 
         # Get user by email
         try:
@@ -93,5 +92,19 @@ def login(request):
         'access': str(refresh.access_token),
         'refresh': str(refresh)}, status=status.HTTP_200_OK)
 
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+@api_view(["POST"])
+def ai_job_helper_local(request):
+    try:
+        resume_text = request.data.get("resume", "").strip()
+        job_text = request.data.get("job", "").strip()
+        if not resume_text or not job_text:
+            return Response({"error": "Missing resume or job"}, status=status.HTTP_400_BAD_REQUEST)
+
+        cover_letter = ai_service.generate_cover_letter(resume_text, job_text)
+        match_score = ai_service.match_score(resume_text, job_text)
+        return Response({"cover_letter": cover_letter, "match_score": match_score})
     except Exception as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

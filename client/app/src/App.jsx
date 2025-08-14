@@ -7,6 +7,7 @@ import Navbar from "./components/Navbar/Navbar";
 import ResumeView from "./pages/ResumeMaker/ResumeMaker";
 import FormWizard from "./components/FormWizard/FormWizard";
 import UserDashboard from "./pages/UserDashBoard/UserDashBoard";
+import AIHelper from "./pages/LLM/AIHelper";
 
 function App() {
   const location = useLocation();
@@ -28,6 +29,8 @@ function App() {
             <UserDashboard />
           }
         />
+        <Route path="/resume" element={<AIHelper />} />
+
       </Routes>
     </>
   );

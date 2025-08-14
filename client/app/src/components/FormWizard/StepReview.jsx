@@ -1,35 +1,71 @@
-import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import axios from "axios";
 
 export default function StepReview({ data, prevStep }) {
-  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState(null);
 
-  const handleSubmit = () => {
-    console.log("Final Data:", data);
-    alert("Form submitted!");
-    navigate("/"); // Redirect to home or another page after submission
+  const resumePreview = data.resumeFile
+    ? data.resumeFile.name // just show file name
+    : "No resume uploaded";
+
+  const jobPreview = data.jobDescription
+    ? data.jobDescription.slice(0, 200) + "..."
+    : "No job description provided.";
+
+  const handleAIProcess = async () => {
+    setLoading(true);
+    try {
+      const res = await axios.post("http://localhost:8000/api/ai/cover-letter", {
+        job_posting: data.jobDescription || "",
+        resume: data.resumeFile ? data.resumeFile.name : "",
+      });
+      setResult(res.data);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div>
-      <h2 className="text-xl font-semibold mb-4">Review & Submit</h2>
-      <p><strong>Resume:</strong> {data.resumeFile?.name || "No file selected"}</p>
-      <p><strong>Job Title:</strong> {data.jobTitle}</p>
-      <p><strong>Job Description:</strong> {data.jobDescription}</p>
+    <div className="p-6">
+      <h2 className="text-xl font-bold mb-4">Review Your Submission</h2>
+      <p className="mb-4">
+        <strong>Resume:</strong> {resumePreview}
+      </p>
 
-      <div className="mt-4 flex justify-between">
-        <button
-          onClick={prevStep}
-          className="px-6 py-2 bg-gray-300 rounded-lg"
-        >
-          Back
-        </button>
-        <button
-          onClick={handleSubmit}
-          className="px-6 py-2 bg-green-600 text-white rounded-lg"
-        >
-          Submit
-        </button>
-      </div>
+      <p className="mb-4">
+        <strong>Job Title:</strong> {data.jobTitle || "Not provided"}
+      </p>
+
+      <p className="mb-4">
+        <strong>Job Description:</strong> {jobPreview}
+      </p>
+
+      <button
+        onClick={prevStep}
+        className="mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg mr-4"
+      >
+        Back
+      </button>
+
+      <button
+        onClick={handleAIProcess}
+        className="mt-4 bg-blue-600 text-white px-4 py-2 rounded"
+        disabled={loading}
+      >
+        {loading ? "Processing..." : "Generate Cover Letter & Score"}
+      </button>
+
+      {result && (
+        <div className="mt-6 p-4 bg-gray-100 rounded">
+          <h3 className="font-semibold">AI Results</h3>
+          <p><strong>Match Score:</strong> {result.score}</p>
+          <p><strong>Cover Letter:</strong></p>
+          <pre className="whitespace-pre-wrap">{result.cover_letter}</pre>
+        </div>
+      )}
     </div>
   );
 }
