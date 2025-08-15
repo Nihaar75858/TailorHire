@@ -21,7 +21,7 @@ const NavigationConfig = {
         },
     ],
     1: [ // Admin
-        { name: "Home", to: "/admin/admindashboard", submenus: null },
+        { name: "Home", to: "/userdashboard", submenus: null },
         {
             name: "Publications", submenus: [
                 { name: "View Publications", to: "/admin/viewpublications" },
@@ -37,15 +37,6 @@ const NavigationConfig = {
         { name: "Notifications", to: "/admin/notifications", submenus: null },
     ],
     2: [ //User
-        { name: "Home", to: "/author/authordashboard", submenus: null },
-        { name: "Books", to: "/author/addbook", submenus: null },
-        {
-            name: "Blogs", submenus: [
-                { name: "Create Blog", to: "/createblog" },
-                { name: "View Blogs", to: "/viewblogs" },
-            ]
-        },
-        { name: "Notifications", to: "/author/notifications", submenus: null },
     ],
 }
 

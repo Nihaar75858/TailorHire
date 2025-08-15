@@ -8,5 +8,5 @@ urlpatterns = [
     path('login/', login, name='login'),
     path('register/', register, name='register'),
     path('user/<int:user_id>/', user_details, name='user_details'),
-    path("api/ai-job-helper-local/", ai_job_helper_local, name="ai_job_helper_local"),
+    path("ai-job-helper-local/", ai_job_helper_local, name="ai_job_helper_local"),
 ]

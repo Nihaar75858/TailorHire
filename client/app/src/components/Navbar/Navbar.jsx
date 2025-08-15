@@ -20,16 +20,24 @@ import { useUser } from '../hooks/useAuth'
 
 export default function Navbar() {
   const { userType } = useUser();
-  console.log("User Type:", userType);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [sidebarOpen, setSidebarOpen] = useState(false) // NEW: for right-hand sidebar
 
   const roleMap = {
-    Admin: 1,
-    user: 2,
     Viewer: 0,
+    Admin: 1,
+    User: 2,
   }
 
   const navLinks = getNavigationConfig(roleMap[userType] ?? 0)
+
+  // Sidebar links (for logged-in users)
+  const sidebarLinks = [
+    { name: 'Profile', to: '/profile' },
+    { name: 'Payments', to: '/payments' },
+    { name: 'Settings', to: '/settings' },
+    { name: 'Sign out', to: '/logout' },
+  ]
 
   return (
     <header className="bg-orange-50">
@@ -94,15 +102,25 @@ export default function Navbar() {
           )}
         </PopoverGroup>
 
-        {/* Sign In button (Desktop) */}
+        {/* Right-side buttons */}
         <div className="hidden lg:flex lg:flex-1 lg:justify-end">
-          <a href="/login" className="text-sm/6 font-semibold text-gray-900">
-            Sign in <span aria-hidden="true">&rarr;</span>
-          </a>
+          {userType === 'Viewer' ? (
+            <a href="/login" className="text-sm/6 font-semibold text-gray-900">
+              Sign in <span aria-hidden="true">&rarr;</span>
+            </a>
+          ) : (
+            <button
+              type="button"
+              onClick={() => setSidebarOpen(true)}
+              className="p-2 text-gray-700 hover:text-gray-900"
+            >
+              <Bars3Icon className="size-6" />
+            </button>
+          )}
         </div>
       </nav>
 
-      {/* Mobile Menu */}
+      {/* Mobile Nav Menu */}
       <Dialog
         open={mobileMenuOpen}
         onClose={setMobileMenuOpen}
@@ -163,16 +181,50 @@ export default function Navbar() {
                 )}
               </div>
 
-              {/* Mobile Sign In */}
+              {/* Mobile Right-hand Sidebar trigger */}
               <div className="py-6">
-                <a
-                  href="/login"
-                  className="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold text-gray-900 hover:bg-gray-50"
-                >
-                  Log in
-                </a>
+                {userType === 'Viewer' ? (
+                  <a
+                    href="/login"
+                    className="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold text-gray-900 hover:bg-gray-50"
+                  >
+                    Log in
+                  </a>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => setSidebarOpen(true)}
+                    className="-mx-3 block rounded-lg px-3 py-2.5 text-base font-semibold text-gray-900 hover:bg-gray-50"
+                  >
+                    Menu
+                  </button>
+                )}
               </div>
             </div>
+          </div>
+        </DialogPanel>
+      </Dialog>
+
+      {/* Sidebar (for logged-in users) */}
+      <Dialog open={sidebarOpen} onClose={setSidebarOpen} className="relative z-50">
+        <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
+        <DialogPanel className="fixed right-0 top-0 h-full w-64 bg-white shadow-xl p-6 rounded-lg transform transition-transform duration-300 ease-in-out">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-lg font-semibold">Menu</h2>
+            <button onClick={() => setSidebarOpen(false)} className="p-2">
+              <XMarkIcon className="size-6 text-gray-700" />
+            </button>
+          </div>
+          <div className="space-y-4">
+            {sidebarLinks.map((item) => (
+              <a
+                key={item.name}
+                href={item.to}
+                className="block rounded-lg px-3 py-2 text-sm font-semibold text-gray-900 hover:bg-gray-50"
+              >
+                {item.name}
+              </a>
+            ))}
           </div>
         </DialogPanel>
       </Dialog>

@@ -8,6 +8,7 @@ import ResumeView from "./pages/ResumeMaker/ResumeMaker";
 import FormWizard from "./components/FormWizard/FormWizard";
 import UserDashboard from "./pages/UserDashBoard/UserDashBoard";
 import AIHelper from "./pages/LLM/AIHelper";
+import JobPostings from "./components/User/JobPostings";
 
 function App() {
   const location = useLocation();
@@ -30,6 +31,7 @@ function App() {
           }
         />
         <Route path="/resume" element={<AIHelper />} />
+        <Route path="/jobs" element={<JobPostings />} />
 
       </Routes>
     </>

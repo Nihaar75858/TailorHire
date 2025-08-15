@@ -1,9 +1,12 @@
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, parser_classes
+from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
 from rest_framework import status
 from .ai_service import ai_service
 from django.contrib.auth.hashers import check_password, make_password
 from rest_framework_simplejwt.tokens import RefreshToken
+from PyPDF2 import PdfReader
+import docx
 from .models import Resume, User, Register
 from .serializer import ResumeSerializer, RegisterSerializer, UserSerializer
 
@@ -98,10 +101,26 @@ def login(request):
 @api_view(["POST"])
 def ai_job_helper_local(request):
     try:
-        resume_text = request.data.get("resume", "").strip()
+        resume_file = request.FILES.get("resume")
         job_text = request.data.get("job", "").strip()
-        if not resume_text or not job_text:
-            return Response({"error": "Missing resume or job"}, status=status.HTTP_400_BAD_REQUEST)
+        print("Received job text:", job_text)
+        
+        resume_text = ""
+        # if not resume_file or not job_text:
+        #     return Response({"error": "Missing resume or job"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        if resume_file:
+            if resume_file.name.endswith(".pdf"):
+                pdf = PdfReader(resume_file)
+                resume_text = " ".join(page.extract_text() or "" for page in pdf.pages)
+
+            elif resume_file.name.endswith(".docx"):
+                doc = docx.Document(resume_file)
+                resume_text = " ".join(p.text for p in doc.paragraphs)
+
+            else:
+                resume_text = resume_file.read().decode("utf-8", errors="ignore")
+        print("Extracted resume text:", resume_text)
 
         cover_letter = ai_service.generate_cover_letter(resume_text, job_text)
         match_score = ai_service.match_score(resume_text, job_text)

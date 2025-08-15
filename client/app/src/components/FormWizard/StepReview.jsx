@@ -14,13 +14,23 @@ export default function StepReview({ data, prevStep }) {
     : "No job description provided.";
 
   const handleAIProcess = async () => {
+    if (!data.resumeFile) {
+      alert("Please upload a resume first!");
+      return;
+    }
     setLoading(true);
     try {
-      const res = await axios.post("http://localhost:8000/api/ai/cover-letter", {
-        job_posting: data.jobDescription || "",
-        resume: data.resumeFile ? data.resumeFile.name : "",
-      });
+      const formData = new FormData();
+      formData.append("resume", data.resumeFile); // actual file
+      formData.append("job", data.jobDescription || "");
+      const res = await axios.post("http://localhost:8000/api/ai-job-helper-local/",
+        formData,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        }
+      );
       setResult(res.data);
+      console.log("AI Response:", res.data);
     } catch (err) {
       console.error(err);
     } finally {

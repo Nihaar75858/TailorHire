@@ -3,6 +3,8 @@ import threading
 import numpy as np
 from transformers import AutoTokenizer, AutoModelForCausalLM, pipeline
 from sentence_transformers import SentenceTransformer
+import torch
+import os
 
 # -------- CONFIG --------
 TEXT_MODEL_ID = "microsoft/phi-3-mini-4k-instruct"   # swap to Qwen2.5-3B-Instruct or mistral as you prefer
@@ -21,22 +23,36 @@ class AIService:
     _lock = threading.Lock()
 
     def __init__(self):
-        # LLM
-        self.llm_tokenizer = AutoTokenizer.from_pretrained(TEXT_MODEL_ID)
-        self.llm_model = AutoModelForCausalLM.from_pretrained(
-            TEXT_MODEL_ID,
-            torch_dtype="auto",           # uses GPU if available
-            device_map="auto",            # auto places on GPU/CPU
-        )
-        self.generator = pipeline(
-            "text-generation",
-            model=self.llm_model,
-            tokenizer=self.llm_tokenizer,
-            device_map="auto",
-        )
+        self.llm_tokenizer = None
+        self.llm_model = None
+        self.generator = None
+        self.embedder = None
 
-        # Embeddings
-        self.embedder = SentenceTransformer(EMB_MODEL_ID)  # stays on CPU fine
+    def _ensure_models_loaded(self):
+        if self.generator is None:
+            print("🔄 Loading LLM model...")
+            self.llm_tokenizer = AutoTokenizer.from_pretrained(TEXT_MODEL_ID)
+            self.llm_model = AutoModelForCausalLM.from_pretrained(
+                TEXT_MODEL_ID,
+                torch_dtype=torch.float32,
+                device_map=None,
+            )
+            self.generator = pipeline(
+                "text-generation",
+                model=self.llm_model,
+                tokenizer=self.llm_tokenizer
+            )
+        model_path = os.path.join(os.path.dirname(__file__), "..", "models", "all-MiniLM-L6-v2")
+        
+        if not os.path.exists(model_path):
+            raise FileNotFoundError(
+                f"❌ Embedding model not found at {model_path}. "
+                f"Please run `python download_models.py` first."
+            )
+
+        print("🔄 Loading embeddings model...")
+        self.embedder = SentenceTransformer(model_path, device="cpu")
+        print("✅ Embeddings model loaded successfully.")
 
     @classmethod
     def get(cls):
@@ -62,19 +78,19 @@ Return only the letter. No preamble, no markdown.
 """
 
     def generate_cover_letter(self, resume_text: str, job_text: str) -> str:
+        self._ensure_models_loaded()
         prompt = self._format_prompt(resume_text, job_text)
         out = self.generator(prompt, **GEN_KW)[0]["generated_text"]
-        # For some models, output repeats the prompt; trim if needed:
-        # Keep only what comes after the prompt:
         if out.startswith(prompt):
             out = out[len(prompt):].strip()
         return out.strip()
 
     def match_score(self, resume_text: str, job_text: str) -> float:
+        self._ensure_models_loaded()
         a = self.embedder.encode(resume_text, normalize_embeddings=True)
         b = self.embedder.encode(job_text, normalize_embeddings=True)
-        # cosine since normalized
         sim = float(np.dot(a, b))
+        print(f"Match score between resume and job: {sim:.4f}")
         return round(sim * 100, 2)
 
 
