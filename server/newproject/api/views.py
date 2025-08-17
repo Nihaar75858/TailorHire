@@ -127,3 +127,32 @@ def ai_job_helper_local(request):
         return Response({"cover_letter": cover_letter, "match_score": match_score})
     except Exception as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@api_view(['GET', 'PUT', 'POST'])
+def user_profile(request, pk):
+    try:
+        register = Register.objects.get(pk=pk)
+    except Register.DoesNotExist:
+        return Response({"error": "Register record not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    # check if User exists for this register
+    user, created = User.objects.get_or_create(
+        id=pk,  # assuming you have FK to Register
+        defaults={
+            "first_name": register.first_name,
+            "last_name": register.last_name,
+            "email": register.email,
+            "username": register.username,
+        }
+    )
+
+    if request.method == "GET":
+        serializer = UserSerializer(user)
+        return Response(serializer.data)
+
+    elif request.method in ["PUT", "POST"]:
+        serializer = UserSerializer(user, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

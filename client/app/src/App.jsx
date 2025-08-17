@@ -9,6 +9,7 @@ import FormWizard from "./components/FormWizard/FormWizard";
 import UserDashboard from "./pages/UserDashBoard/UserDashBoard";
 import AIHelper from "./pages/LLM/AIHelper";
 import JobPostings from "./components/User/JobPostings";
+import ProfilePage from "./components/Profile/Profile";
 
 function App() {
   const location = useLocation();
@@ -24,14 +25,11 @@ function App() {
         <Route path="/register" element={<RegisterForm />} />
         <Route path="/addresume" element={<ResumeView />} />
         <Route path="/formwizard" element={<FormWizard />} />
-        <Route
-          path="/userdashboard"
-          element={
-            <UserDashboard />
-          }
-        />
+        <Route path="/userdashboard" element={<UserDashboard />}/>
         <Route path="/resume" element={<AIHelper />} />
         <Route path="/jobs" element={<JobPostings />} />
+        <Route path="/profile" element={<ProfilePage />} />
+        {/* Add more routes as needed */}
 
       </Routes>
     </>

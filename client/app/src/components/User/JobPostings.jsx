@@ -11,7 +11,7 @@ const jobs = [
     salary: "Up to ₹8,00,000 a year",
     rating: 5.0,
     perks: ["Work from home", "Paid time off"],
-    tags: ["Typically responds within 1 day", "Easily apply"],
+    tags: ["Easily apply using Indeed"],
     type: "Hybrid work",
   },
   {
@@ -22,7 +22,7 @@ const jobs = [
     salary: "₹10,00,000 - ₹12,00,000 a year",
     rating: 4.5,
     perks: ["Health insurance", "Flexible hours"],
-    tags: ["Urgently hiring"],
+    tags: ["Urgently hiring", "Remote"],
     type: "Remote",
   },
 ];
