@@ -23,6 +23,7 @@ const cards = [
 
 const UserDashBoard = () => {
     const { user } = useUser();
+    console.log("User in dashboard:", user);
     if (!user) return <p>Loading...</p>;
 
     const navigate = useNavigate();

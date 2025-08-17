@@ -1,7 +1,7 @@
 export default function DashboardFooter() {
     return (
       <footer className="bg-black text-gray-400 px-6 py-12 mt-12">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-5 gap-10">
+        <div className="max-w-8xl mx-auto grid grid-cols-1 md:grid-cols-5 gap-10">
           {/* Logo & Tagline */}
           <div className="md:col-span-1 space-y-4">
             <div className="flex items-center space-x-2">

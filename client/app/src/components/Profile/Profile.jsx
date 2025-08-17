@@ -8,7 +8,7 @@ export default function ProfilePage() {
     const [formData, setFormData] = useState({
         first_name: "",
         last_name: "",
-        username: user?.username || "",
+        username: "",
         email: "",
         phone: "",
         bio: "",
@@ -21,7 +21,6 @@ export default function ProfilePage() {
         const storedUser = JSON.parse(localStorage.getItem("user"));
         setId(storedUser.id);
         console.log("User ID", storedUser.id);
-        console.log("User data:", id);
 
         const fetchUserData = async () => {
             const response = await fetch(`http://localhost:8000/api/user/${storedUser.id}/`, {
@@ -33,19 +32,26 @@ export default function ProfilePage() {
             });
             if (response.ok) {
                 const data = await response.json();
+                console.log("Fetched data:", data);
                 setFormData({
                     first_name: data.first_name || "",
                     last_name: data.last_name || "",
                     username: data.username || "",
                     email: data.email || "",
+                    phone: data.phone || "",
+                    location: data.location || "",
+                    bio: data.bio || "",
                     profilePic: data.profilePic || "https://via.placeholder.com/150",
                 });
             }
-
-            console.log("Fetched user data:", formData);
         }
         fetchUserData();
     }, []);
+
+    useEffect(() => {
+        console.log("formData actually updated:", formData);
+    }, [formData]);
+
 
     const handleChange = (e) => {
         const { name, value, files } = e.target;
@@ -91,124 +97,129 @@ export default function ProfilePage() {
 
 
     return (
-        <div className="max-w-3xl mx-auto p-6">
-            <h1 className="text-2xl font-bold mb-6">My Profile</h1>
+        <>
+            <div className="bg-orange-100 min-h-screen">
+                <div className="max-w-3xl mx-auto p-6">
+                    <h1 className="text-2xl font-bold mb-6">My Profile</h1>
 
-            <form
-                onSubmit={handleSubmit}
-                className="bg-white shadow-md rounded-lg p-6 space-y-6"
-            >
-                {/* Profile Picture */}
-                <div className="flex flex-col items-center">
-                    <img
-                        src={null}
-                        alt="Profile"
-                        className="w-24 h-24 rounded-full object-cover border"
-                    />
-                    <label className="mt-3 cursor-pointer text-blue-600 text-sm">
-                        Change Photo
-                        <input
-                            type="file"
-                            name="profilePic"
-                            accept="image/*"
-                            onChange={handleChange}
-                            className="hidden"
-                        />
-                    </label>
-                </div>
-
-                {/* Name */}
-                <div>
-                    <label className="block font-medium">First Name</label>
-                    <input
-                        type="text"
-                        name="name"
-                        value={formData.first_name}
-                        onChange={handleChange}
-                        className="w-full border px-3 py-2 rounded mt-1"
-                    />
-                </div>
-
-                <div>
-                    <label className="block font-medium">Last Name</label>
-                    <input
-                        type="text"
-                        name="name"
-                        value={formData.last_name}
-                        onChange={handleChange}
-                        className="w-full border px-3 py-2 rounded mt-1"
-                    />
-                </div>
-
-                <div>
-                    <label className="block font-medium">Username</label>
-                    <input
-                        type="text"
-                        name="name"
-                        value={formData.username}
-                        onChange={handleChange}
-                        className="w-full border px-3 py-2 rounded mt-1"
-                    />
-                </div>
-
-                {/* Email */}
-                <div>
-                    <label className="block font-medium">Email</label>
-                    <input
-                        type="email"
-                        name="email"
-                        value={formData.email}
-                        onChange={handleChange}
-                        className="w-full border px-3 py-2 rounded mt-1"
-                    />
-                </div>
-
-                {/* Phone */}
-                <div>
-                    <label className="block font-medium">Phone</label>
-                    <input
-                        type="text"
-                        name="phone"
-                        value={formData.phone}
-                        onChange={handleChange}
-                        className="w-full border px-3 py-2 rounded mt-1"
-                    />
-                </div>
-
-                {/* Location */}
-                <div>
-                    <label className="block font-medium">Location</label>
-                    <input
-                        type="text"
-                        name="location"
-                        value={formData.location}
-                        onChange={handleChange}
-                        className="w-full border px-3 py-2 rounded mt-1"
-                    />
-                </div>
-
-                {/* Bio */}
-                <div>
-                    <label className="block font-medium">Bio</label>
-                    <textarea
-                        name="bio"
-                        value={formData.bio}
-                        onChange={handleChange}
-                        className="w-full border px-3 py-2 rounded mt-1"
-                        rows="3"
-                    />
-                </div>
-
-                {/* Submit Button */}
-                <div className="flex justify-end">
-                    <button
-                        type="submit"
-                        className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700"
+                    <form
+                        onSubmit={handleSubmit}
+                        className="bg-white shadow-md rounded-lg p-6 space-y-6"
                     >
-                        Save Changes
-                    </button>
+                        {/* Profile Picture */}
+                        <div className="flex flex-col items-center">
+                            <img
+                                src={null}
+                                alt="Profile"
+                                className="w-24 h-24 rounded-full object-cover border"
+                            />
+                            <label className="mt-3 cursor-pointer text-blue-600 text-sm">
+                                Change Photo
+                                <input
+                                    type="file"
+                                    name="profilePic"
+                                    accept="image/*"
+                                    onChange={handleChange}
+                                    className="hidden"
+                                />
+                            </label>
+                        </div>
+
+                        {/* Name */}
+                        <div>
+                            <label className="block font-medium">First Name</label>
+                            <input
+                                type="text"
+                                name="first_name"
+                                value={formData.first_name}
+                                onChange={handleChange}
+                                className="w-full border px-3 py-2 rounded mt-1"
+                            />
+                        </div>
+
+                        <div>
+                            <label className="block font-medium">Last Name</label>
+                            <input
+                                type="text"
+                                name="last_name"
+                                value={formData.last_name}
+                                onChange={handleChange}
+                                className="w-full border px-3 py-2 rounded mt-1"
+                            />
+                        </div>
+
+                        <div>
+                            <label className="block font-medium">Username</label>
+                            <input
+                                type="text"
+                                name="username"
+                                value={formData.username}
+                                onChange={handleChange}
+                                className="w-full border px-3 py-2 rounded mt-1"
+                            />
+                        </div>
+
+                        {/* Email */}
+                        <div>
+                            <label className="block font-medium">Email</label>
+                            <input
+                                type="email"
+                                name="email"
+                                value={formData.email}
+                                onChange={handleChange}
+                                className="w-full border px-3 py-2 rounded mt-1"
+                            />
+                        </div>
+
+                        {/* Phone */}
+                        <div>
+                            <label className="block font-medium">Phone</label>
+                            <input
+                                type="text"
+                                name="phone"
+                                value={formData.phone}
+                                onChange={handleChange}
+                                className="w-full border px-3 py-2 rounded mt-1"
+                            />
+                        </div>
+
+                        {/* Location */}
+                        <div>
+                            <label className="block font-medium">Location</label>
+                            <input
+                                type="text"
+                                name="location"
+                                value={formData.location}
+                                onChange={handleChange}
+                                className="w-full border px-3 py-2 rounded mt-1"
+                            />
+                        </div>
+
+                        {/* Bio */}
+                        <div>
+                            <label className="block font-medium">Bio</label>
+                            <textarea
+                                type="text"
+                                name="bio"
+                                value={formData.bio}
+                                onChange={handleChange}
+                                className="w-full border px-3 py-2 rounded mt-1"
+                                rows="3"
+                            />
+                        </div>
+
+                        {/* Submit Button */}
+                        <div className="flex justify-end">
+                            <button
+                                type="submit"
+                                className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700"
+                            >
+                                Save Changes
+                            </button>
+                        </div>
+                    </form>
                 </div>
-            </form>
-        </div>
+            </div>
+        </>
     );
 }

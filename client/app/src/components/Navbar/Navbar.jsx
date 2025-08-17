@@ -17,6 +17,7 @@ import {
 import { ChevronDownIcon } from '@heroicons/react/20/solid'
 import { getNavigationConfig } from '../constants/utils'
 import { useUser } from '../hooks/useAuth'
+import { Link } from 'react-router-dom'
 
 export default function Navbar() {
   const { userType } = useUser();
@@ -31,12 +32,17 @@ export default function Navbar() {
 
   const navLinks = getNavigationConfig(roleMap[userType] ?? 0)
 
+  const handleLogout = () => {
+    localStorage.clear(); // or remove only the keys you need
+    window.location.href = "/"; // redirect to landing or login page
+  };
+
   // Sidebar links (for logged-in users)
   const sidebarLinks = [
     { name: 'Profile', to: '/profile' },
     { name: 'Payments', to: '/payments' },
     { name: 'Settings', to: '/settings' },
-    { name: 'Sign out', to: '/logout' },
+    { name: 'Sign out', action: handleLogout },
   ]
 
   return (
@@ -216,15 +222,25 @@ export default function Navbar() {
             </button>
           </div>
           <div className="space-y-4">
-            {sidebarLinks.map((item) => (
-              <a
-                key={item.name}
-                href={item.to}
-                className="block rounded-lg px-3 py-2 text-sm font-semibold text-gray-900 hover:bg-gray-50"
-              >
-                {item.name}
-              </a>
-            ))}
+            {sidebarLinks.map((link, idx) =>
+              link.action ? (
+                <button
+                  key={idx}
+                  onClick={link.action}
+                  className="text-red-500 px-4 py-2 w-full text-left"
+                >
+                  {link.name}
+                </button>
+              ) : (
+                <Link
+                  key={idx}
+                  to={link.to}
+                  className="block px-4 py-2"
+                >
+                  {link.name}
+                </Link>
+              )
+            )}
           </div>
         </DialogPanel>
       </Dialog>

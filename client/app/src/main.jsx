@@ -6,11 +6,11 @@ import { BrowserRouter } from 'react-router-dom'
 import { UserProvider } from './components/hooks/useAuth.jsx'
 
 createRoot(document.getElementById('root')).render(
-  <BrowserRouter>
-    <React.StrictMode>
+  <React.StrictMode>
+    <BrowserRouter>
       <UserProvider>
         <App />
       </UserProvider>
-    </React.StrictMode>,
-  </BrowserRouter>
+    </BrowserRouter>
+  </React.StrictMode>
 )

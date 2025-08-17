@@ -47,11 +47,27 @@ def resume_detail(request, pk):
 @api_view(['GET'])
 def user_details(request, user_id):
     try:
-        user = Register.objects.get(id=user_id)
-        serializedData = RegisterSerializer(user).data
+        # First check if a User record already exists
+        user = User.objects.filter(id=user_id).first()
+        print("User found:", user)
+
+        if not user:
+            # Fallback: bootstrap from Register
+            register = Register.objects.get(id=user_id)
+            user = User.objects.create(
+                id=register.id,
+                username=register.username,
+                email=register.email,
+                first_name=register.first_name,
+                last_name=register.last_name,
+            )
+
+        serializedData = UserSerializer(user).data
         return Response(serializedData, status=status.HTTP_200_OK)
+
     except Register.DoesNotExist:
         return Response({'error': 'User Not Found'}, status=status.HTTP_404_NOT_FOUND)
+
 
 @api_view(['POST'])
 def register(request):

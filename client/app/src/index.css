@@ -3,7 +3,4 @@
 @tailwind components;
 @tailwind utilities;
 
-@theme {
-      --color-custom-blue: #1a2b3c;
-      --color-my-green: #4CAF50;
-    }
+

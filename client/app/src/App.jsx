@@ -10,6 +10,7 @@ import UserDashboard from "./pages/UserDashBoard/UserDashBoard";
 import AIHelper from "./pages/LLM/AIHelper";
 import JobPostings from "./components/User/JobPostings";
 import ProfilePage from "./components/Profile/Profile";
+import "./App.css"; // Ensure you have your styles imported
 
 function App() {
   const location = useLocation();
