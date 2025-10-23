@@ -38,3 +38,26 @@ class ChatMessage(models.Model):
     content = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
     
+class Jobs(models.Model):
+    JOB_TYPES = [
+        ('full-time', 'Full-time'),
+        ('part-time', 'Part-time'),
+        ('contract', 'Contract'),
+        ('internship', 'Internship'),
+    ]
+    
+    title = models.CharField(max_length=200)
+    company = models.CharField(max_length=200)
+    location = models.CharField(max_length=200)
+    salary_min = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    salary_max = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    job_type = models.CharField(max_length=20, choices=JOB_TYPES, default='full-time')
+    description = models.TextField()
+    requirements = models.JSONField(default=list)
+    is_active = models.BooleanField(default=True)
+    posted_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='posted_jobs')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.title} at {self.company}"
