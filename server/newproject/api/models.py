@@ -32,3 +32,9 @@ class User(models.Model):
     def __str__(self):
         return self.username
     
+class ChatMessage(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    role = models.CharField(max_length=10, choices=[("user", "User"), ("assistant", "Assistant")])
+    content = models.TextField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+    

@@ -7,8 +7,21 @@ from django.contrib.auth.hashers import check_password, make_password
 from rest_framework_simplejwt.tokens import RefreshToken
 from PyPDF2 import PdfReader
 import docx
-from .models import Resume, User, Register
-from .serializer import ResumeSerializer, RegisterSerializer, UserSerializer
+import os
+import requests
+from fastapi import FastAPI, HTTPException
+from dotenv import load_dotenv
+from .models import Resume, User, Register, ChatMessage
+from .serializer import ChatMessageSerializer, ResumeSerializer, RegisterSerializer, UserSerializer
+
+load_dotenv()
+
+app = FastAPI()
+
+HF_API_KEY = os.getenv("HF_API_KEY")
+
+# Model you want to use (can change to another)
+HF_MODEL = "mistralai/Mistral-7B-Instruct-v0.2"
 
 @api_view(['GET'])
 def resume_list(request):
@@ -172,3 +185,63 @@ def user_profile(request, pk):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['POST'])
+def chat(request):
+    user_id = request.data.get("user_id")
+    user_message = request.data.get("message", "")
+
+    if not user_id:
+        return Response({"error": "user_id is required"}, status=status.HTTP_400_BAD_REQUEST)
+    if not user_message:
+        return Response({"error": "No message provided"}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Save user message
+    ChatMessage.objects.create(user_id=user_id, role="user", content=user_message)
+
+        # Fetch conversation history
+    history = ChatMessage.objects.filter(user_id=user_id).order_by("timestamp")
+
+    context = "\n".join(f"{msg.role}: {msg.content}" for msg in history)
+
+    headers = {"Authorization": f"Bearer {HF_API_KEY}"}
+    payload = {"inputs": context}
+
+    try:
+        try:
+            response = requests.post(
+                f"https://huggingface.co/{HF_MODEL}",
+                headers=headers,
+                json=payload,
+                timeout=60  # avoid infinite hang
+            )
+        except requests.exceptions.RequestException as e:
+            return Response({"error": "Request to Hugging Face failed", "details": str(e)}, status=500)
+
+        if response.status_code != 200:
+            return Response({
+                "error": "Error from Hugging Face API",
+                "status_code": response.status_code,
+                "details": response.text   # raw Hugging Face error here
+            }, status=500)
+
+        data = response.json()
+
+        if isinstance(data, list) and len(data) > 0 and "generated_text" in data[0]:
+            reply = data[0]["generated_text"]
+        elif isinstance(data, dict) and "generated_text" in data:
+            reply = data["generated_text"]
+        else:
+            reply = "Sorry, I couldn’t understand."
+
+        # Save assistant reply
+        ChatMessage.objects.create(user_id=user_id, role="assistant", content=reply)
+
+        # Return latest messages
+        messages = ChatMessage.objects.filter(user_id=user_id).order_by("-timestamp")[:10]
+        serialized = ChatMessageSerializer(messages, many=True)
+
+        return Response({"reply": reply, "history": serialized.data}, status=status.HTTP_200_OK)
+
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

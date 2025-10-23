@@ -80,9 +80,11 @@ Return only the letter. No preamble, no markdown.
     def generate_cover_letter(self, resume_text: str, job_text: str) -> str:
         self._ensure_models_loaded()
         prompt = self._format_prompt(resume_text, job_text)
+        print("Reached here in generate_cover_letter")
         out = self.generator(prompt, **GEN_KW)[0]["generated_text"]
         if out.startswith(prompt):
             out = out[len(prompt):].strip()
+        print("Reached end in generate_cover_letter")
         return out.strip()
 
     def match_score(self, resume_text: str, job_text: str) -> float:
