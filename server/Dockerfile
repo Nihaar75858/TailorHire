@@ -1,5 +1,9 @@
-FROM python:3.10-slim
-WORKDIR /app
+FROM python:3.11-slim
 ENV PYTHONBUFFERED=1 
-RUN pip install --no-cache-dir django
-COPY . .
+
+COPY ./requirements.txt /requirements.txt
+RUN pip3 install -r requirements.txt
+
+RUN mkdir /app
+WORKDIR /app
+COPY ./app /app

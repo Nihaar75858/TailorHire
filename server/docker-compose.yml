@@ -1,14 +1,12 @@
 version: "3"
 
 services:
-    server:
+  app:
       build: 
-          context: .
+            context: .
       ports:
         - "8000:8000" 
       volumes:
-        - .:/app
+        - ./app:/app
       command: >
-        sh -c "python manage.py runserver 0.0.0.0:8000"
-
-# docker-compose run server sh -c "django-admin startproject newproject ."
+        sh -c "python3 manage.py runserver 0.0.0.0:8000"
