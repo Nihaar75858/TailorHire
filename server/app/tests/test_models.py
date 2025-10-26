@@ -2,8 +2,11 @@ from django.test import TestCase
 from api import models
 
 class UserModelTest(TestCase):
+    """Tests for the CustomUser model"""
+    
     def test_create_user_model(self):
-        user = models.User.objects.create(
+        """Test user creation and __str__ method"""
+        user = models.CustomUser.objects.create(
             firstName = "John",
             lastName = "Doe",
             username = "John123",

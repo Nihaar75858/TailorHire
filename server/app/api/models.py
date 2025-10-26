@@ -2,14 +2,14 @@ from django.db import models
 from django.core.validators import FileExtensionValidator
 
 # Create your models here.
-class User(models.Model):
+class CustomUser(models.Model):
     firstName = models.CharField(max_length=100)
     lastName = models.CharField(max_length=100)
-    username = models.CharField(max_length=100)
-    email = models.EmailField()
+    username = models.CharField(max_length=100, unique=True)
+    email = models.EmailField(unique=True)
     password = models.CharField(max_length=100)
     bio = models.TextField(blank=True, null=True)
-    location = models.CharField(max_length=200, blank=True, null=True)
+    location = models.CharField(max_length=300, blank=True, null=True)
     skills = models.TextField(blank=True, null=True)
     profile_picture = models.ImageField(
         upload_to='profiles/',
