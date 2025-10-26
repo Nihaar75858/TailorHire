@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.validators import FileExtensionValidator
 
 # Create your models here.
 class User(models.Model):
@@ -13,7 +14,8 @@ class User(models.Model):
     profile_picture = models.ImageField(
         upload_to='profiles/',
         blank=True,
-        null=True
+        null=True,
+        validators=[FileExtensionValidator(['jpg', 'jpeg', 'png'])]
     )
     role = models.JSONField()
     created_at = models.DateField(auto_now_add=True)
