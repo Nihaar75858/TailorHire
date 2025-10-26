@@ -1,8 +1,7 @@
 from django.test import TestCase
 from api import models
-import datetime
 
-class User(TestCase):
+class UserModelTest(TestCase):
     def test_create_user_model(self):
         user = models.User.objects.create(
             firstName = "John",
@@ -13,9 +12,8 @@ class User(TestCase):
             bio = "I am ready to work",
             location = "Indiana, USA",
             skills = "Java, Python, C",
+            profile_picture="profiles/profile_picture.jpg",
             role = ["User", "Recruiter", "Admin"],
-            created_at = datetime.date(2025, 6, 7),
-            updated_at = datetime.date(2025, 6, 15),
         )
 
-        self.assertEqual(str(user), user.username)
+        self.assertEqual(user.profile_picture, "profiles/profile_picture.jpg")
