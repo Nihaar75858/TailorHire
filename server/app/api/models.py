@@ -1,8 +1,9 @@
 from django.db import models
+from django.contrib.auth.models import AbstractUser
 from django.core.validators import FileExtensionValidator
 
 # Create your models here.
-class CustomUser(models.Model):
+class CustomUser(AbstractUser):
     firstName = models.CharField(max_length=100)
     lastName = models.CharField(max_length=100)
     username = models.CharField(max_length=100, unique=True)
@@ -17,7 +18,7 @@ class CustomUser(models.Model):
         null=True,
         validators=[FileExtensionValidator(['jpg', 'jpeg', 'png'])]
     )
-    role = models.JSONField()
+    role = models.JSONField(blank=True, null=True, default=list)
     created_at = models.DateField(auto_now_add=True)
     updated_at = models.DateField(auto_now=True)
 
