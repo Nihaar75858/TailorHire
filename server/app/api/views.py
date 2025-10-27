@@ -1,15 +1,25 @@
 from django.shortcuts import render
 from .models import CustomUser
 from .serializer import UserSerializer
-from rest_framework.decorators import action
+from rest_framework.decorators import action, api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 
 # Create your views here.
 class UserViewSet(viewsets.ModelViewSet):
     queryset = CustomUser.objects.all()
     serializer_class = UserSerializer
+    permission_classes = [IsAuthenticated]
+    
+    def get_permissions(self):
+        if self.action == 'create':
+            return [AllowAny()]
+        return super().get_permissions()
     
     @action(detail=False, methods=['get', 'put', 'patch'])
     def profile(self, request):
