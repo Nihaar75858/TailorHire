@@ -3,7 +3,15 @@ import { describe, it, expect, vi } from "vitest";
 import { BrowserRouter } from "react-router-dom";
 import Register from "../src/pages/Auth/Register";
 
-global.fetch = vi.fn();
+beforeEach(() => {
+  global.fetch = vi.fn(() =>
+    Promise.resolve({
+      ok: true,
+      json: () => Promise.resolve({ message: "Registration successful" }),
+    })
+  );
+});
+
 
 describe("Register Component", () => {
   it("renders all form fields", () => {
@@ -69,3 +77,8 @@ describe("Register Component", () => {
     );
   });
 });
+
+afterEach(() => {
+  vi.clearAllMocks();
+});
+
