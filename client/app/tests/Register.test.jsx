@@ -31,7 +31,7 @@ describe("Register Component", () => {
     expect(passwordFields[1]).toBeInTheDocument();
   });
 
-  it("submits form data correctly", async () => {
+  it("submits form data correctly and navigates to login", async () => {
     const mockResponse = { message: "Registration successful!" };
     fetch.mockResolvedValueOnce({
       ok: true,
@@ -63,6 +63,17 @@ describe("Register Component", () => {
 
     fireEvent.click(screen.getByRole("button", { name: /register/i }));
 
+    const mockNavigate = vi.fn();
+
+    // Mock useNavigate
+    vi.mock("react-router-dom", async () => {
+      const actual = await vi.importActual("react-router-dom");
+      return {
+        ...actual,
+        useNavigate: () => mockNavigate,
+      };
+    });
+
     await waitFor(() =>
       expect(fetch).toHaveBeenCalledWith(
         "http://127.0.0.1:8000/api/users/",
@@ -79,6 +90,7 @@ describe("Register Component", () => {
         })
       )
     );
+    expect(mockNavigate).toHaveBeenCalledWith("/login");
   });
 });
 
