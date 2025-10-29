@@ -8,6 +8,7 @@ export default function Register() {
     email: "",
     username: "",
     password: "",
+    confirmPassword: "",
   });
 
   const navigate = useNavigate();
@@ -28,7 +29,13 @@ export default function Register() {
       const response = await fetch("http://127.0.0.1:8000/api/users/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify({
+          firstName: form.firstName,
+          lastName: form.lastName,
+          email: form.email,
+          username: form.username,
+          password: form.password
+        }),
       }); // Check if response is OK before parsing JSON
 
       if (!response.ok) {
@@ -109,6 +116,7 @@ export default function Register() {
             <button
               onClick={() => navigate("/")}
               type="submit"
+              name="register"
               className="w-full bg-white text-black py-2 rounded-md hover:bg-black hover:text-white transition duration-200"
             >
               
