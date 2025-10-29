@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 export default function Register() {
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
   const [form, setForm] = useState({
     firstName: "",
     lastName: "",
@@ -26,7 +27,7 @@ export default function Register() {
       }
 
       console.log("Register form data sent:", form);
-      const response = await fetch("http://127.0.0.1:8000/api/users/", {
+      const response = await fetch(`${API_BASE_URL}/api/users/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
