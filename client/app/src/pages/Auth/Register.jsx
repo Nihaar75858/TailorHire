@@ -21,13 +21,13 @@ export default function Register() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      if(form.password !== form.confirmPassword) {
+      if (form.password !== form.confirmPassword) {
         alert("Make sure password and confirmPassword are the same");
         return;
       }
 
       console.log("Register form data sent:", form);
-      const response = await fetch(`${API_BASE_URL}/api/users/`, {
+      const response = await fetch(`${API_BASE_URL}/users/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -35,7 +35,7 @@ export default function Register() {
           lastName: form.lastName,
           email: form.email,
           username: form.username,
-          password: form.password
+          password: form.password,
         }),
       }); // Check if response is OK before parsing JSON
 
@@ -121,10 +121,15 @@ export default function Register() {
               name="register"
               className="w-full bg-white text-black py-2 rounded-md hover:bg-black hover:text-white transition duration-200"
             >
-              
               Register
             </button>
           </form>
+
+          <p className="text-center">
+            Already have an account? click here to <a href="/login" className="text-blue-600 hover:underline">
+               Sign In.
+            </a>
+          </p>
         </div>
       </div>
       {/* Right: Logo */}

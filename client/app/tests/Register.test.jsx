@@ -22,6 +22,8 @@ vi.mock("react-router-dom", async () => {
   };
 });
 
+vi.stubEnv("VITE_API_BASE_URL", "http://127.0.0.1:8000/api");
+
 describe("Register Component", () => {
   it("renders all form fields", () => {
     render(

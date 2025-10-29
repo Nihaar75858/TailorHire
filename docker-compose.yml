@@ -1,0 +1,13 @@
+version: "3"
+
+services:
+  app:
+      build: 
+            context: ./server
+      volumes:
+        - ./server:/server
+      working_dir: /server/app
+      command: >
+        sh -c "python3 manage.py runserver 0.0.0.0:8000"
+      ports:
+        - "8000:8000" 

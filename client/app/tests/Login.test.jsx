@@ -11,6 +11,8 @@ vi.mock("react-router-dom", async () => {
   return { ...actual, useNavigate: () => mockNavigate };
 });
 
+vi.stubEnv("VITE_API_BASE_URL", "http://127.0.0.1:8000/api");
+
 beforeEach(() => {
   global.alert = vi.fn();
   global.fetch = vi.fn();
@@ -30,7 +32,6 @@ describe("Login Component", () => {
   });
 
   it("submits login credentials correctly", async () => {
-    // ❌ This should fail initially (RED)
     const mockResponse = { message: "Login successful" };
     fetch.mockResolvedValueOnce({
       ok: true,
@@ -44,10 +45,10 @@ describe("Login Component", () => {
     );
 
     fireEvent.change(screen.getByPlaceholderText(/Username/i), {
-      target: { value: "johndoe" },
+      target: { value: "johndoe", name: "username" },
     });
     fireEvent.change(screen.getByPlaceholderText(/Password/i), {
-      target: { value: "pass123" },
+      target: { value: "pass123", name: "password" },
     });
 
     fireEvent.click(screen.getByRole("button", { name: /login/i }));
@@ -65,7 +66,7 @@ describe("Login Component", () => {
 
     // optional: verify navigation
     await waitFor(() =>
-      expect(mockNavigate).toHaveBeenCalledWith("/login")
+      expect(mockNavigate).toHaveBeenCalledWith("/userdashboard")
     );
   });
 });
