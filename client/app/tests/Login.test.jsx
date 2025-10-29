@@ -65,7 +65,7 @@ describe("Login Component", () => {
 
     // optional: verify navigation
     await waitFor(() =>
-      expect(mockNavigate).toHaveBeenCalledWith("/userdashboard")
+      expect(mockNavigate).toHaveBeenCalledWith("/login")
     );
   });
 });

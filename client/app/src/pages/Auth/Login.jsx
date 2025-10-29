@@ -22,7 +22,8 @@ export default function Login() {
       body: JSON.stringify(form),
     });
 
-    navigate("/");
+    alert("Login successful");
+    navigate("/login");
   };
 
   return (
