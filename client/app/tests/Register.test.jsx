@@ -13,6 +13,15 @@ beforeEach(() => {
   );
 });
 
+const mockNavigate = vi.fn();
+vi.mock("react-router-dom", async () => {
+  const actual = await vi.importActual("react-router-dom");
+  return {
+    ...actual,
+    useNavigate: () => mockNavigate,
+  };
+});
+
 describe("Register Component", () => {
   it("renders all form fields", () => {
     render(
@@ -62,17 +71,6 @@ describe("Register Component", () => {
     fireEvent.change(confirmInput, { target: { value: "pass123" } });
 
     fireEvent.click(screen.getByRole("button", { name: /register/i }));
-
-    const mockNavigate = vi.fn();
-
-    // Mock useNavigate
-    vi.mock("react-router-dom", async () => {
-      const actual = await vi.importActual("react-router-dom");
-      return {
-        ...actual,
-        useNavigate: () => mockNavigate,
-      };
-    });
 
     await waitFor(() =>
       expect(fetch).toHaveBeenCalledWith(
