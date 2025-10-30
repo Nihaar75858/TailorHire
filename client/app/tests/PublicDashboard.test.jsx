@@ -1,7 +1,7 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { BrowserRouter } from "react-router-dom";
-import PublicDashBoard from "../src/pages/Public/DashBoard"; // adjust path if different
+import PublicDashBoard from "../src/pages/Public/PublicDashBoard"; // adjust path if different
 
 // Mock navigate
 const mockNavigate = vi.fn();
