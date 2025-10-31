@@ -1,3 +1,12 @@
+import { FaFacebook, FaSquareXTwitter, FaGithub } from "react-icons/fa6";
+
+const sections = {
+  Solutions: ["Marketing", "Analytics", "Automation", "Commerce", "Insights"],
+  Support: ["Submit ticket", "Documentation", "Guides"],
+  Company: ["About", "Blog", "Jobs", "Press"],
+  Legal: ["Terms of service", "Privacy policy", "License"]
+};
+
 export default function DashboardFooter() {
   return (
     <footer className="bg-black text-gray-400 px-6 py-12 mt-12">
@@ -9,100 +18,31 @@ export default function DashboardFooter() {
           </div>
 
           <p>
-            Making the world a better place through constructing elegant
-            hierarchies.
+            You're Job-searching begins from here
           </p>
-          <div className="flex space-x-4 pt-2 text-lg">
-            <a href="#" aria-label="Facebook">
-              <i className="fab fa-facebook-f" />
-            </a>
-            <a href="#" aria-label="Instagram">
-              <i className="fab fa-instagram" />
-            </a>
-            <a href="#" aria-label="X">
-              <i className="fab fa-x-twitter" />
-            </a>
-            <a href="#" aria-label="GitHub">
-              <i className="fab fa-github" />
-            </a>
-            <a href="#" aria-label="YouTube">
-              <i className="fab fa-youtube" />
-            </a>
+          <div className="flex space-x-4 pt-2 text-lg cursor-pointer">
+            <FaFacebook />
+            <FaSquareXTwitter />
+            <FaGithub />
           </div>
         </div>
 
-        {/* Sections */}
-        <div>
-          <h3 className="text-white font-semibold mb-3">Solutions</h3>
-          <ul className="space-y-2">
-            <li>
-              <a href="#">Marketing</a>
-            </li>
-            <li>
-              <a href="#">Analytics</a>
-            </li>
-            <li>
-              <a href="#">Automation</a>
-            </li>
-            <li>
-              <a href="#">Commerce</a>
-            </li>
-            <li>
-              <a href="#">Insights</a>
-            </li>
-          </ul>
-        </div>
-
-        <div>
-          <h3 className="text-white font-semibold mb-3">Support</h3>
-          <ul className="space-y-2">
-            <li>
-              <a href="#">Submit ticket</a>
-            </li>
-            <li>
-              <a href="#">Documentation</a>
-            </li>
-            <li>
-              <a href="#">Guides</a>
-            </li>
-          </ul>
-        </div>
-
-        <div>
-          <h3 className="text-white font-semibold mb-3">Company</h3>
-          <ul className="space-y-2">
-            <li>
-              <a href="#">About</a>
-            </li>
-            <li>
-              <a href="#">Blog</a>
-            </li>
-            <li>
-              <a href="#">Jobs</a>
-            </li>
-            <li>
-              <a href="#">Press</a>
-            </li>
-          </ul>
-        </div>
-
-        <div>
-          <h3 className="text-white font-semibold mb-3">Legal</h3>
-          <ul className="space-y-2">
-            <li>
-              <a href="#">Terms of service</a>
-            </li>
-            <li>
-              <a href="#">Privacy policy</a>
-            </li>
-            <li>
-              <a href="#">License</a>
-            </li>
-          </ul>
-        </div>
+        {/* Dynamic sections */}
+        {Object.entries(sections).map(([title, links]) => (
+          <div key={title}>
+            <h3 className="text-white font-semibold mb-3">{title}</h3>
+            <ul className="space-y-2">
+              {links.map((link) => (
+                <li key={link}>
+                  <a href="#">{link}</a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
       </div>
       <div className="border-t border-gray-700 mt-12 pt-6 text-center text-sm">
-        © 2025 TailorHire, Inc. All rights reserved.
+        © {new Date().getFullYear()} TailorHire, Inc. All rights reserved.
       </div>
     </footer>
   );

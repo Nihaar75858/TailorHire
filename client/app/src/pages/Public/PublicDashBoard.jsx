@@ -1,6 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { UploadCloud, FileText } from "lucide-react";
+import DashboardFooter from "../../components/Footer/DashboardFooter";
 
 const PublicDashBoard = () => {
   const navigate = useNavigate();
@@ -204,6 +205,7 @@ results = get_snippets_for_query("reasons to smile")`}</pre>
           </div>
         </section>
       </div>
+      <DashboardFooter />
     </div>
   );
 };
