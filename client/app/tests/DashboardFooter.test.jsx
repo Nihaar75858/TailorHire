@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { describe, it, expect } from "vitest";
-import DashboardFooter from "../src/components/Footer/Footer";
+import DashboardFooter from "../src/components/Footer/DashboardFooter";
 
 describe("DashboardFooter Component", () => {
   it("renders logo, tagline, and social icons", () => {
