@@ -21,6 +21,7 @@ import { Link } from 'react-router-dom'
 
 const Navbar = () => {
   const { userType } = useUser();
+  console.log("Data fetched:", userType)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [sidebarOpen, setSidebarOpen] = useState(false) // NEW: for right-hand sidebar
 

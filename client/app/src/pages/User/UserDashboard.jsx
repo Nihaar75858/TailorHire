@@ -1,7 +1,6 @@
 import React from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useUser } from "../../components/hooks/useAuth";
-// import Recommendations from "./../../components/User/Recommendations";
 
 const cards = [
   {
@@ -23,6 +22,7 @@ const cards = [
 
 const UserDashBoard = () => {
   const { user } = useUser();
+  console.log("Data fetched:", user);
   if (!user) return <p>Loading...</p>;
 
   const navigate = useNavigate();

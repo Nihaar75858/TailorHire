@@ -16,6 +16,7 @@ export const UserProvider = ({ children }) => {
       }
 
       try {
+        console.log("Token:", token);
         const response = await fetch(`${import.meta.env.VITE_API_BASE_URL || "http://localhost:8000/api"}/users/profile/`, {
           headers: {
             Authorization: `Bearer ${token}`,
