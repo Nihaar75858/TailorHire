@@ -1,12 +1,12 @@
 import { renderHook, waitFor } from "@testing-library/react";
 import { rest } from "msw";
 import { setupServer } from "msw/node";
-import { UserProvider, useUser } from "../src/components/Context/UserContext";
+import { UserProvider, useUser } from "../src/components/hooks/useAuth";
 
 // Mock server for backend API
 const server = setupServer(
-  rest.get("/api/users/profile/", (req, res, ctx) => {
-    return res(ctx.status(200), ctx.json({ username: "john_doe", role: "Admin" }));
+  rest.get("http://127.0.0.1:8000/api/users/profile/", (req, res, ctx) => {
+    return res(ctx.status(200), ctx.json({ username: "John123", role: "Admin" }));
   })
 );
 
@@ -34,7 +34,7 @@ describe("useUser (Auth Hook)", () => {
     });
 
     await waitFor(() => {
-      expect(result.current.user?.username).toBe("john_doe");
+      expect(result.current.user?.username).toBe("John123");
       expect(result.current.userType).toBe("Admin");
     });
   });
@@ -42,7 +42,7 @@ describe("useUser (Auth Hook)", () => {
   test("falls back to Viewer if backend returns error", async () => {
     // Force backend failure
     server.use(
-      rest.get("/api/users/profile/", (req, res, ctx) => {
+      rest.get("http://127.0.0.1:8000/api/users/profile/", (req, res, ctx) => {
         return res(ctx.status(401), ctx.json({ error: "Unauthorized" }));
       })
     );
