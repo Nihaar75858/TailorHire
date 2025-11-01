@@ -64,58 +64,58 @@ describe("Login Component", () => {
       )
     );
 
-    it("saves user and tokens to localStorage on successful login", async () => {
-      const mockResponse = {
-        user: { id: 1, username: "johndoe", role: "Admin" },
-        access: "mockAccess123",
-        refresh: "mockRefresh456",
-      };
+    // optional: verify navigation
+    await waitFor(() =>
+      expect(mockNavigate).toHaveBeenCalledWith("/userdashboard")
+    );
+  });
 
-      fetch.mockResolvedValueOnce({
-        ok: true,
-        json: async () => mockResponse,
-      });
+  it("saves user and tokens to localStorage on successful login", async () => {
+    const mockResponse = {
+      user: { id: 1, username: "johndoe", role: "Admin" },
+      access: "mockAccess123",
+      refresh: "mockRefresh456",
+    };
 
-      render(
-        <BrowserRouter>
-          <Login />
-        </BrowserRouter>
-      );
-
-      fireEvent.change(screen.getByPlaceholderText(/Username/i), {
-        target: { value: "johndoe" },
-      });
-      fireEvent.change(screen.getByPlaceholderText(/Password/i), {
-        target: { value: "pass123" },
-      });
-
-      fireEvent.click(screen.getByRole("button", { name: /login/i }));
-
-      await waitFor(() =>
-        expect(fetch).toHaveBeenCalledWith(
-          "http://127.0.0.1:8000/api/users/login_user/",
-          expect.objectContaining({
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ username: "johndoe", password: "pass123" }),
-          })
-        )
-      );
-
-      // ✅ Verify localStorage persistence
-      expect(localStorage.getItem("user")).toEqual(
-        JSON.stringify(mockResponse.user)
-      );
-      expect(localStorage.getItem("accessToken")).toBe("mockAccess123");
-      expect(localStorage.getItem("refreshToken")).toBe("mockRefresh456");
-
-      // ✅ Verify redirect
-      await waitFor(() =>
-        expect(mockNavigate).toHaveBeenCalledWith("/userdashboard")
-      );
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => mockResponse,
     });
 
-    // optional: verify navigation
+    render(
+      <BrowserRouter>
+        <Login />
+      </BrowserRouter>
+    );
+
+    fireEvent.change(screen.getByPlaceholderText(/Username/i), {
+      target: { value: "johndoe" },
+    });
+    fireEvent.change(screen.getByPlaceholderText(/Password/i), {
+      target: { value: "pass123" },
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: /login/i }));
+
+    await waitFor(() =>
+      expect(fetch).toHaveBeenCalledWith(
+        "http://127.0.0.1:8000/api/users/login_user/",
+        expect.objectContaining({
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username: "johndoe", password: "pass123" }),
+        })
+      )
+    );
+
+    // ✅ Verify localStorage persistence
+    expect(localStorage.getItem("user")).toEqual(
+      JSON.stringify(mockResponse.user)
+    );
+    expect(localStorage.getItem("accessToken")).toBe("mockAccess123");
+    expect(localStorage.getItem("refreshToken")).toBe("mockRefresh456");
+
+    // ✅ Verify redirect
     await waitFor(() =>
       expect(mockNavigate).toHaveBeenCalledWith("/userdashboard")
     );

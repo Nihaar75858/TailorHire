@@ -17,13 +17,29 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    await fetch(`${API_BASE_URL}/users/login_user/`, {
+    const response = await fetch(`${API_BASE_URL}/users/login_user/`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(form),
     });
 
-    alert("Login successful");
+    const data = await response.json();
+    console.log("Response from server:", data);
+
+    // Save token and/or user data to localStorage so useAuth can access it
+    if (data.user) {
+      localStorage.setItem("userId", data.user.id);
+      localStorage.setItem("user", JSON.stringify(data.user));
+    }
+
+    // Optionally save tokens if you use them
+    localStorage.setItem("accessToken", data.access);
+    localStorage.setItem("refreshToken", data.refresh); // store auth token
+
+    alert("Login successful!");
+    console.log("Login successful:", data);
+
+    // Redirect to dashboard
     navigate("/userdashboard");
   };
 
@@ -53,7 +69,7 @@ export default function Login() {
               required
             />
             <button
-              onClick={() => navigate('/userdashboard')}
+              onClick={() => navigate("/userdashboard")}
               type="submit"
               name="Login"
               className="w-full bg-white text-black py-2 rounded-md hover:bg-black hover:text-white transition duration-200"
