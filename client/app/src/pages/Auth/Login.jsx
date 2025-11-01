@@ -24,23 +24,30 @@ export default function Login() {
     });
 
     const data = await response.json();
-    console.log("Response from server:", data);
+    console.log("Response from server:", data.user);
 
-    // Save token and/or user data to localStorage so useAuth can access it
-    if (data.user) {
-      localStorage.setItem("userId", data.user.id);
-      localStorage.setItem("user", JSON.stringify(data.user));
+    if (!response.ok) {
+      console.error("Error from server:", data);
+      alert(data.detail || "Login failed!");
+      return;
     }
-
-    // Optionally save tokens if you use them
-    localStorage.setItem("accessToken", data.access);
-    localStorage.setItem("refreshToken", data.refresh); // store auth token
 
     alert("Login successful!");
     console.log("Login successful:", data);
 
+    storeAuthData(data);
+
     // Redirect to dashboard
     navigate("/userdashboard");
+  };
+
+  const storeAuthData = (data) => {
+    if (data.user.id) localStorage.setItem("userId", data.user.id);
+    if (data.user) localStorage.setItem("user", JSON.stringify(data.user));
+    if (data.access) localStorage.setItem("accessToken", data.access);
+    if (data.refresh) localStorage.setItem("refreshToken", data.refresh);
+    if (data.user?.role) localStorage.setItem("userType", data.user.role);
+    console.log(data.user.id, data.user, data.access, data.refresh);
   };
 
   return (
