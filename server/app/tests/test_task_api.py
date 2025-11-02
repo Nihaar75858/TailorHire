@@ -41,8 +41,21 @@ class UserApiTest(TestCase):
         self.client = APIClient()
         self.login_url = reverse('customuser-login-user')
         self.logout_url = reverse('customuser-logout-user')
+        
+    def authenticate_user(self):
+        """Helper: create a user, log in, and set JWT token for authenticated requests."""
+        user = sample_payload()
+        payload = {
+            "username": user.username,
+            "password": "hello123",
+        }
+        res = self.client.post(self.login_url, payload, format='json')
+        token = res.data.get("access")
+        self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {token}")
+        return user, res
 
     def test_create_user(self):
+        """Create Test User"""
         image_path = Path(__file__).resolve().parent.parent / "profile" / "test.jpg"
         with open(image_path, "rb") as img:
             image = SimpleUploadedFile("test.jpg", img.read(), content_type="image/jpeg")
@@ -65,6 +78,7 @@ class UserApiTest(TestCase):
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
         
     def test_login_successful(self):
+        """Login Test User with Username and Password (Successful)"""
         user = sample_payload()
         payload = {
             "username": user.username,
@@ -76,6 +90,7 @@ class UserApiTest(TestCase):
         self.assertIn("Login successful", res.data["message"])
 
     def test_login_invalid_credentials(self):
+        """Login Test User with Username and Password (Failure)"""
         payload = {
             "username": "wrongusername",
             "password": "wrongpassword"
@@ -86,12 +101,18 @@ class UserApiTest(TestCase):
         self.assertIn("Invalid credentials", res.data["error"])
         
     def test_logout_user(self):
-        res = self.client.post(self.logout_url)
+        """Test User Logs out"""
+        user, login_res = self.authenticate_user()
+
+        refresh_token = login_res.data["refresh"]
+        payload = {"refresh": refresh_token}
+        res = self.client.post(self.logout_url, payload, format='json')
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertIn("Logged out successfully", res.data["message"])
 
     def test_update_user(self):
-        user = sample_payload()
+        """Test User will Update Profile"""
+        user, _ = self.authenticate_user()
         image_path = Path(__file__).resolve().parent.parent / "profile" / "test.jpg"
         with open(image_path, "rb") as img:
             image = SimpleUploadedFile("test.jpg", img.read(), content_type="image/jpeg")
@@ -116,9 +137,9 @@ class UserApiTest(TestCase):
         self.assertEqual(res.status_code, status.HTTP_200_OK)
 
     def test_user_details(self):
-        user = sample_payload()
+        """Test User Details to be sent to the Frontend"""
+        user, _ = self.authenticate_user()
         url = details_url(user.id)
-
         res = self.client.get(url)
-
         self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res.data["username"], user.username)
