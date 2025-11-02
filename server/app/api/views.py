@@ -1,8 +1,9 @@
 from django.shortcuts import render
 from .models import CustomUser
 from .serializer import UserSerializer
-from rest_framework.decorators import action, api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
+from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from django.contrib.auth import authenticate, login, logout
@@ -42,7 +43,13 @@ class UserViewSet(viewsets.ModelViewSet):
         user = authenticate(username=username, password=password)
         if user:
             login(request, user)
-            return Response({'message': 'Login successful'}, status=status.HTTP_200_OK)
+            refresh = RefreshToken.for_user(user)
+            access = str(refresh.access_token)
+            return Response({
+                'message': 'Login successful',
+                "access": str(access),
+                "refresh": str(refresh),
+            }, status=status.HTTP_200_OK)
         else:
             return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
 
