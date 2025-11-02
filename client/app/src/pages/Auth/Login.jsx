@@ -17,14 +17,32 @@ export default function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    await fetch(`${API_BASE_URL}/users/login_user/`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
-    });
+    try {
+      const response = await fetch(`${API_BASE_URL}/users/login_user/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
 
-    alert("Login successful");
-    navigate("/userdashboard");
+      const data = await response.json();
+      console.log("Response from server:", data);
+
+      if (!response.ok) {
+        alert(data.error || "Login failed!");
+        return;
+      }
+
+      localStorage.setItem("accessToken", data.access);
+      localStorage.setItem("refreshToken", data.refresh);
+
+      alert("Login successful!");
+      console.log("Login successful:", data);
+
+      navigate("/userdashboard");
+    } catch (error) {
+      console.error("Error logging in:", error);
+      alert("An error occurred during login.");
+    }
   };
 
   return (
@@ -53,7 +71,7 @@ export default function Login() {
               required
             />
             <button
-              onClick={() => navigate('/userdashboard')}
+              onClick={() => navigate("/userdashboard")}
               type="submit"
               name="Login"
               className="w-full bg-white text-black py-2 rounded-md hover:bg-black hover:text-white transition duration-200"
