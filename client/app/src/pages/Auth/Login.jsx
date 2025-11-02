@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { saveTokens } from "../../utils/auth";
 
 export default function Login() {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
@@ -32,8 +33,7 @@ export default function Login() {
         return;
       }
 
-      localStorage.setItem("accessToken", data.access);
-      localStorage.setItem("refreshToken", data.refresh);
+      saveTokens(data.access, data.refresh);
 
       alert("Login successful!");
       console.log("Login successful:", data);
@@ -44,6 +44,7 @@ export default function Login() {
       alert("An error occurred during login.");
     }
   };
+
 
   return (
     <div className="min-h-screen flex bg-orange-400 text-white">
