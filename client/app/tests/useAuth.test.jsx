@@ -1,12 +1,12 @@
 import { renderHook, waitFor } from "@testing-library/react";
 import { rest } from "msw";
 import { setupServer } from "msw/node";
-import { UserProvider, useUser } from "../src/components/Context/UserContext";
+import { UserProvider, useUser } from "../src/components/hooks/useAuth";
 
 // Mock server for backend API
 const server = setupServer(
   rest.get("/api/users/profile/", (req, res, ctx) => {
-    return res(ctx.status(200), ctx.json({ username: "john_doe", role: "Admin" }));
+    return res(ctx.status(200), ctx.json({ username: "John123", role: "Admin" }));
   })
 );
 

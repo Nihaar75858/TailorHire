@@ -16,6 +16,7 @@ vi.stubEnv("VITE_API_BASE_URL", "http://127.0.0.1:8000/api");
 beforeEach(() => {
   global.alert = vi.fn();
   global.fetch = vi.fn();
+  Storage.prototype.setItem = vi.fn();
 });
 
 describe("Login Component", () => {
@@ -68,6 +69,47 @@ describe("Login Component", () => {
     await waitFor(() =>
       expect(mockNavigate).toHaveBeenCalledWith("/userdashboard")
     );
+  });
+
+  it("saves access and refresh tokens to localStorage on successful login", async () => {
+    const mockResponse = {
+      message: "Login successful",
+      access: "mockAccessToken123",
+      refresh: "mockRefreshToken456",
+    };
+
+    fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => mockResponse,
+    });
+
+    render(
+      <BrowserRouter>
+        <Login />
+      </BrowserRouter>
+    );
+
+    fireEvent.change(screen.getByPlaceholderText(/Username/i), {
+      target: { value: "johndoe", name: "username" },
+    });
+    fireEvent.change(screen.getByPlaceholderText(/Password/i), {
+      target: { value: "pass123", name: "password" },
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: /login/i }));
+
+    await waitFor(() => {
+      expect(localStorage.setItem).toHaveBeenCalledWith(
+        "accessToken",
+        "mockAccessToken123"
+      );
+      expect(localStorage.setItem).toHaveBeenCalledWith(
+        "refreshToken",
+        "mockRefreshToken456"
+      );
+    });
+
+    expect(mockNavigate).toHaveBeenCalledWith("/userdashboard");
   });
 });
 
