@@ -5,7 +5,7 @@ import { UserProvider, useUser } from "../src/components/hooks/useAuth";
 
 // Mock server for backend API
 const server = setupServer(
-  http.get(`${import.meta.env.VITE_API_BASE_URL || "http://localhost:8000"}/api/users/profile/`, () => {
+  http.get(`${import.meta.env.VITE_API_BASE_URL}/users/profile/`, () => {
     return HttpResponse.json({ username: "John123", role: "Admin" });
   })
 );
@@ -42,7 +42,7 @@ describe("useUser (Auth Hook)", () => {
   test("falls back to Viewer if backend returns error", async () => {
     // Force backend failure
     server.use(
-      http.get(`${import.meta.env.VITE_API_BASE_URL || "http://localhost:8000"}/api/users/profile/`, () => {
+      http.get(`${import.meta.env.VITE_API_BASE_URL}/users/profile/`, () => {
         return HttpResponse.json({ username: "testuser", role: "User" });
       })
     );
