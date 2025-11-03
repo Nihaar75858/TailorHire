@@ -1,15 +1,27 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
+import { getAccessToken, getRefreshToken, clearTokens } from "../../utils/auth";
 
 const UserContext = createContext(null);
 
 export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [userType, setUserType] = useState("Viewer");
+  const [access, setAccess] = useState(getAccessToken());
 
+  // Watch for token changes (login/logout)
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const currentAccess = getAccessToken();
+      if (currentAccess !== access) {
+        setAccess(currentAccess);
+      }
+    }, 500);
+    return () => clearInterval(interval);
+  }, [access]);
+
+  // Fetch user when access token changes
   useEffect(() => {
     const fetchUser = async () => {
-      const access = localStorage.getItem("access");
-
       if (!access) {
         setUser(null);
         setUserType("Viewer");
@@ -17,13 +29,23 @@ export const UserProvider = ({ children }) => {
       }
 
       try {
-        const res = await fetch(`${import.meta.env.VITE_API_BASE_URL}/users/profile/`, {
-          headers: {
-            Authorization: `Bearer ${access}`,
-          },
-        });
+        const res = await fetch(
+          `${import.meta.env.VITE_API_BASE_URL}/users/profile/`,
+          {
+            headers: {
+              Authorization: `Bearer ${access}`,
+            },
+          }
+        );
 
-        if (!res.ok) throw new Error("Unauthorized");
+        if (!res.ok) {
+          // Token might be expired or invalid
+          console.warn("Access token invalid or expired.");
+          clearTokens();
+          setUser(null);
+          setUserType("Viewer");
+          return;
+        }
 
         const data = await res.json();
         setUser(data);
@@ -36,7 +58,7 @@ export const UserProvider = ({ children }) => {
     };
 
     fetchUser();
-  }, []);
+  }, [access]);
 
   return (
     <UserContext.Provider value={{ user, userType, setUser }}>
