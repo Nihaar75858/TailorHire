@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { getAccessToken, getRefreshToken, clearTokens } from "../../utils/auth";
+import { getAccessToken, clearTokens } from "../../utils/auth";
 
 const UserContext = createContext(null);
 
@@ -49,7 +49,9 @@ export const UserProvider = ({ children }) => {
 
         const data = await res.json();
         setUser(data);
-        setUserType(data.role || "User");
+        setUserType(
+          Array.isArray(data.role) ? data.role[0] : data.role || "User"
+        );
       } catch (err) {
         console.error("Error fetching user profile:", err);
         setUser(null);
@@ -59,6 +61,8 @@ export const UserProvider = ({ children }) => {
 
     fetchUser();
   }, [access]);
+
+  console.log(userType);
 
   return (
     <UserContext.Provider value={{ user, userType, setUser }}>

@@ -21,13 +21,13 @@ import { Link } from 'react-router-dom'
 
 const Navbar = () => {
   const { userType } = useUser();
+  console.log(userType);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [sidebarOpen, setSidebarOpen] = useState(false) // NEW: for right-hand sidebar
 
   const roleMap = {
     Viewer: 0,
-    Admin: 1,
-    User: 2,
+    User: 1,
   }
 
   const navLinks = getNavigationConfig(roleMap[userType] ?? 0)
@@ -40,8 +40,6 @@ const Navbar = () => {
   // Sidebar links (for logged-in users)
   const sidebarLinks = [
     { name: 'Profile', to: '/profile' },
-    { name: 'Payments', to: '/payments' },
-    { name: 'Settings', to: '/settings' },
     { name: 'Sign out', action: handleLogout },
   ]
 

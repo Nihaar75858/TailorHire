@@ -23,5 +23,7 @@ const NavigationConfig = {
 };
 
 export const getNavigationConfig = (userType) => {
-  return NavigationConfig[userType] || NavigationConfig[0];
+  const config = NavigationConfig?.[userType];
+  return Array.isArray(config) ? config : NavigationConfig[0];
 };
+
