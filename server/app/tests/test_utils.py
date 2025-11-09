@@ -1,9 +1,9 @@
-import pytest
+# import pytest
 from unittest.mock import patch, MagicMock
-from app.api.utils import HuggingFaceAI
+from api.utils import HuggingFaceAI
 from unittest.mock import patch
 
-@pytest.mark.django_db
+# @pytest.mark.django_db
 @patch("core.utils.requests.post")
 def test_generate_cover_letter_success(mock_post, settings):
     mock_response = MagicMock()
