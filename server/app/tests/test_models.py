@@ -108,3 +108,15 @@ class TestJobModel(TestCase):
         assert job.title == "Senior DevOps Engineer"
         assert job.is_active is False
         assert job.updated_at > old_updated_at
+        
+    def test_salary_range_display(self):
+        job = models.Job.objects.create(
+            title="Designer",
+            company="Designify",
+            location="Remote",
+            description="Create visuals.",
+            requirements=[],
+            salary_min=Decimal("40000.00"),
+            salary_max=Decimal("60000.00")
+        )
+        assert job.salary_range() == "$40000.00 - $60000.00"

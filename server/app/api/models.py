@@ -48,6 +48,15 @@ class Job(models.Model):
 
     class Meta:
         ordering = ['-created_at']
+        
+    def salary_range(self):
+        if self.salary_min and self.salary_max:
+            return f"${self.salary_min} - ${self.salary_max}"
+        elif self.salary_min:
+            return f"From ${self.salary_min}"
+        elif self.salary_max:
+            return f"Up to ${self.salary_max}"
+        return "Not specified"
 
     def __str__(self):
         return f"{self.title} at {self.company}"
