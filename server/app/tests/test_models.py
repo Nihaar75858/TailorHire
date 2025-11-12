@@ -27,7 +27,7 @@ class TestJobModel(TestCase):
 
     def test_create_job_basic(self):
         """Should create a Job instance with valid data"""
-        user = UserModelTest.objects.create_user(username="recruiter", password="test123")
+        user = models.CustomUser.objects.create_user(username="recruiter", password="test123")
 
         job = models.Job.objects.create(
             title="Backend Developer",
@@ -85,7 +85,7 @@ class TestJobModel(TestCase):
 
         assert job.salary_min is None
         assert job.salary_max is None
-        assert job.job_type == "full-time"  # default
+        assert job.job_type == "full-time"
         assert job.posted_by is None
         assert job.is_active is True
 
