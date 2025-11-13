@@ -53,7 +53,7 @@ class UserViewSet(viewsets.ModelViewSet):
         else:
             return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
 
-    # ✅ LOGOUT
+    # LOGOUT
     @action(detail=False, methods=['post'])
     def logout_user(self, request):
         logout(request)

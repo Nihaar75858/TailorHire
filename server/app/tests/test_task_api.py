@@ -4,6 +4,7 @@ from rest_framework import status
 from django.urls import reverse
 from pathlib import Path
 from api.serializer import UserSerializer
+from api import models
 from django.core.files.uploadedfile import SimpleUploadedFile
 import json
 
@@ -143,3 +144,88 @@ class UserApiTest(TestCase):
         res = self.client.get(url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(res.data["username"], user.username)
+
+class TestJobViewSet(TestCase):
+    def api_client(self):
+        return APIClient()
+
+    def user(self):
+        return models.CustomUser.objects.create_user(username="recruiter", password="test123")
+
+    def auth_client(self, api_client, user):
+        api_client.force_authenticate(user=user)
+        return api_client
+
+    def job(self, user):
+        return models.Job.objects.create(
+            title="Software Engineer",
+            company="Cartify Inc",
+            location="Remote",
+            salary_min=70000,
+            salary_max=120000,
+            job_type="full-time",
+            description="Develop scalable systems",
+            requirements=["Python", "Django", "REST API"],
+            posted_by=user,
+        )
+
+    def test_list_jobs(self, auth_client, job):
+        """Should list active jobs"""
+        url = reverse("job-list")
+        response = auth_client.get(url)
+        assert response.status_code == status.HTTP_200_OK
+        assert len(response.data) > 0
+        assert response.data[0]["title"] == "Software Engineer"
+
+    def test_filter_jobs_by_location(self, auth_client, job):
+        """Should filter jobs by location"""
+        url = reverse("job-list") + "?location=Remote"
+        response = auth_client.get(url)
+        assert response.status_code == 200
+        assert all("Remote" in j["location"] for j in response.data)
+
+    def test_filter_jobs_by_type(self, auth_client, job):
+        """Should filter jobs by job type"""
+        url = reverse("job-list") + "?job_type=full-time"
+        response = auth_client.get(url)
+        assert response.status_code == 200
+        assert all(j["job_type"] == "full-time" for j in response.data)
+
+    def test_create_job_authenticated(self, auth_client):
+        """Should allow authenticated user to create job"""
+        url = reverse("job-list")
+        data = {
+            "title": "Backend Developer",
+            "company": "Techify",
+            "location": "New York",
+            "salary_min": 80000,
+            "salary_max": 130000,
+            "job_type": "full-time",
+            "description": "Build backend APIs",
+            "requirements": ["Python", "FastAPI", "PostgreSQL"],
+        }
+        response = auth_client.post(url, data, format="json")
+        assert response.status_code == status.HTTP_201_CREATED
+        assert models.Job.objects.count() == 1
+        assert models.Job.objects.first().posted_by.username == "recruiter"
+
+    def test_create_job_unauthenticated(self, api_client):
+        """Should not allow unauthenticated users to create job"""
+        url = reverse("job-list")
+        data = {
+            "title": "Unauthorized Job",
+            "company": "Hacker Corp",
+            "location": "Dark Web",
+            "description": "Malicious things",
+            "requirements": ["Hacking"],
+        }
+        response = api_client.post(url, data, format="json")
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+    def test_recommended_jobs_without_skills(self, auth_client, user):
+        """Should return error if user has no skills"""
+        url = reverse("job-recommended")
+        response = auth_client.get(url)
+        assert response.status_code == 400
+        assert "update your skills" in response.data["detail"].lower()
+
